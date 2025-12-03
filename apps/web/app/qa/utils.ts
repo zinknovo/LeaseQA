@@ -1,4 +1,4 @@
-import { Folder, Post } from "./types";
+import {Folder, Post} from "./types";
 
 export const getFolderDisplayName = (folders: Folder[], folderName: string) => {
     const folder = folders.find(f => f.name === folderName);

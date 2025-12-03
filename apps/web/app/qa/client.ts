@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const axiosWithCredentials = axios.create({ withCredentials: true });
+const axiosWithCredentials = axios.create({withCredentials: true});
 
 export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER || "http://localhost:4000";
 export const FOLDER_API = `${HTTP_SERVER}/api/folders`;

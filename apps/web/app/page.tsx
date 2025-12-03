@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {Button, Card, Col, Row, Stack} from "react-bootstrap";
 
 const stats = [

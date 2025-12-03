@@ -141,7 +141,7 @@ export default function QAPage() {
             </Col>
 
             <Col lg={8}>
-                <NavTabs active="qa" />
+                <NavTabs active="qa"/>
                 <FeedHeader
                     folders={folders}
                     posts={posts}

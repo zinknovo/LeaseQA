@@ -1,47 +1,47 @@
 :root {
-  --nav-width: 120px;
-  --accent: #d00000;
-  --ink: #0f172a;
-  --panel: #ffffff;
-  --panel-muted: #f4f6fb;
+    --nav-width: 120px;
+    --accent: #d00000;
+    --ink: #0f172a;
+    --panel: #ffffff;
+    --panel-muted: #f4f6fb;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  background: #eef1f5;
-  color: var(--ink);
-  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+    margin: 0;
+    background: #eef1f5;
+    color: var(--ink);
+    font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 .app-shell .content-shell {
-  margin-left: 0;
+    margin-left: 0;
 }
 
 @media (min-width: 768px) {
-  .app-shell .content-shell {
-    margin-left: var(--nav-width);
-  }
+    .app-shell .content-shell {
+        margin-left: var(--nav-width);
+    }
 }
 
 .active-link {
-  background: white !important;
-  border-left: 3px solid var(--accent) !important;
+    background: white !important;
+    border-left: 3px solid var(--accent) !important;
 }
 
 .hero-card {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: white;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
 }
 
 .pill {
-  background: #f1f5f9;
-  border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #334155;
+    background: #f1f5f9;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
 }

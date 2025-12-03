@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Card, CardBody, Col, Row } from "react-bootstrap";
+import {useEffect, useState} from "react";
+import {Card, CardBody, Col, Row} from "react-bootstrap";
 import * as client from "../client";
 
 export default function StatsCard() {
     const [stats, setStats] = useState([
-        { label: "Unread posts", value: 0 },
-        { label: "Unanswered", value: 0 },
-        { label: "Attorney replies", value: 0 },
-        { label: "Tenant replies", value: 0 },
-        { label: "Registered users", value: 0 },
-        { label: "Total posts", value: 0 },
+        {label: "Unread posts", value: 0},
+        {label: "Unanswered", value: 0},
+        {label: "Attorney replies", value: 0},
+        {label: "Tenant replies", value: 0},
+        {label: "Registered users", value: 0},
+        {label: "Total posts", value: 0},
     ]);
     const [loading, setLoading] = useState(true);
 
@@ -24,12 +24,12 @@ export default function StatsCard() {
             const response = await client.fetchStats();
             if (response.data) {
                 setStats([
-                    { label: "Unread posts", value: response.data.unreadPosts || 0 },
-                    { label: "Unanswered", value: response.data.unansweredPosts || 0 },
-                    { label: "Attorney replies", value: response.data.lawyerResponses || 0 },
-                    { label: "Tenant replies", value: response.data.tenantResponses || 0 },
-                    { label: "Registered users", value: response.data.enrolledUsers || 0 },
-                    { label: "Total posts", value: response.data.totalPosts || 0 },
+                    {label: "Unread posts", value: response.data.unreadPosts || 0},
+                    {label: "Unanswered", value: response.data.unansweredPosts || 0},
+                    {label: "Attorney replies", value: response.data.lawyerResponses || 0},
+                    {label: "Tenant replies", value: response.data.tenantResponses || 0},
+                    {label: "Registered users", value: response.data.enrolledUsers || 0},
+                    {label: "Total posts", value: response.data.totalPosts || 0},
                 ]);
             }
         } catch (error) {

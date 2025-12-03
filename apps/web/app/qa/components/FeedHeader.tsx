@@ -1,13 +1,10 @@
 "use client";
+
 import {Button, Card, CardBody, Col, ListGroup, ListGroupItem, Row, Stack} from "react-bootstrap";
 import {FeedHeaderProps} from "../types";
+import {getFolderDisplayName} from "../utils";
 
 export default function FeedHeader({folders, posts, activeFolder, onSelectFolder}: FeedHeaderProps) {
-    const getFolderDisplayName = (folderName: string) => {
-        const folder = folders.find(f => f.name === folderName);
-        return folder?.displayName || folderName;
-    };
-
     return (
         <Card className="mb-3">
             <CardBody>
@@ -52,7 +49,7 @@ export default function FeedHeader({folders, posts, activeFolder, onSelectFolder
                                 <ListGroupItem key={post._id}>
                                     <div className="fw-semibold">{post.summary}</div>
                                     <div className="text-secondary small">
-                                        {getFolderDisplayName(post.folders[0])}
+                                        {getFolderDisplayName(folders, post.folders[0])}
                                     </div>
                                 </ListGroupItem>
                             ))}

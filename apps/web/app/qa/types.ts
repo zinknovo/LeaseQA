@@ -35,3 +35,8 @@ export type FeedHeaderProps = {
     activeFolder: string | null;
     onSelectFolder: (folderName: string) => void;
 };
+
+export type PostDetailProps = {
+    post: Post | null;
+    folders: Folder[];
+};

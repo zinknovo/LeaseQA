@@ -4,8 +4,11 @@ import {useEffect, useMemo, useState} from "react";
 import {Badge, Button, Card, CardBody, Col, FormControl, ListGroup, ListGroupItem, Row, Stack} from "react-bootstrap";
 import {Folder, Post} from "./types";
 import * as client from "./client";
+import {getFolderDisplayName, getPostCount} from "./utils";
 import StatsCard from "./components/StatsCard";
+import NavTabs from "./components/NavTabs";
 import FeedHeader from "./components/FeedHeader";
+import PostDetail from "./components/PostDetail";
 
 export default function QAPage() {
     const [folders, setFolders] = useState<Folder[]>([]);
@@ -63,15 +66,6 @@ export default function QAPage() {
 
     const selectedPost = posts.find(p => p._id === selectedId) || null;
 
-    const getFolderDisplayName = (folderName: string) => {
-        const folder = folders.find(f => f.name === folderName);
-        return folder?.displayName || folderName;
-    };
-
-    const getPostCount = (folderName: string) => {
-        return posts.filter(post => post.folders.includes(folderName)).length;
-    };
-
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -101,7 +95,7 @@ export default function QAPage() {
                         <ListGroup className="mb-3">
                             {folders.map(folder => (
                                 <ListGroupItem
-                                    key={folder._id}
+                                    key={folder.name}
                                     action
                                     active={folder.name === activeFolder}
                                     onClick={() => setActiveFolder(folder.name)}
@@ -109,7 +103,7 @@ export default function QAPage() {
                                     <div className="d-flex justify-content-between align-items-center">
                                         <span>{folder.displayName}</span>
                                         <Badge bg="light" text="dark">
-                                            {getPostCount(folder.name)}
+                                            {getPostCount(posts, folder.name)}
                                         </Badge>
                                     </div>
                                 </ListGroupItem>
@@ -128,8 +122,7 @@ export default function QAPage() {
                                     >
                                         <div className="fw-semibold">{post.summary}</div>
                                         <div className="text-secondary small">
-                                            {new Date(post.createdAt).toLocaleDateString()} · {post.folders
-                                            .map(f => getFolderDisplayName(f)).join(" · ")}
+                                            {new Date(post.createdAt).toLocaleDateString()} · {post.folders.map(f => getFolderDisplayName(folders, f)).join(" · ")}
                                         </div>
                                     </ListGroupItem>
                                 ))
@@ -145,62 +138,17 @@ export default function QAPage() {
             </Col>
 
             <Col lg={8}>
-                <Card className="mb-3">
-                    <CardBody className="py-2">
-                        <Stack
-                            direction="horizontal"
-                            className="justify-content-start flex-wrap gap-2"
-                        >
-                            <Button href="/qa" size="sm" variant="link">
-                                QA
-                            </Button>
-                            <Button href="/qa/resources" size="sm" variant="link">
-                                Resources
-                            </Button>
-                            <Button href="/qa/stats" size="sm" variant="link">
-                                Stats
-                            </Button>
-                        </Stack>
-                    </CardBody>
-                </Card>
+                <NavTabs/>
                 <FeedHeader
                     folders={folders}
                     posts={posts}
                     activeFolder={activeFolder}
                     onSelectFolder={setActiveFolder}
                 />
-                <Card>
-                    <CardBody>
-                        {selectedPost ? (
-                            <>
-                                <div className="d-flex align-items-center gap-2 mb-2">
-                                    <Badge bg={selectedPost.urgency === "high" ? "danger" : "secondary"}>
-                                        {selectedPost.urgency}
-                                    </Badge>
-                                    <span className="text-secondary small">
-                                        {selectedPost.folders
-                                            .map(f => getFolderDisplayName(f))
-                                            .join(" · ")} · {new Date(selectedPost.createdAt)
-                                        .toLocaleDateString()}
-                                    </span>
-                                </div>
-                                <h3 className="h5 fw-semibold">{selectedPost.summary}</h3>
-                                <p className="text-secondary">{selectedPost.details}</p>
-
-                                <Stack direction="horizontal" gap={2} className="flex-wrap mt-3">
-                                    <Button size="sm" variant="primary">
-                                        Open thread
-                                    </Button>
-                                    <Button href="/qa/new" size="sm" variant="outline-secondary">
-                                        Reply
-                                    </Button>
-                                </Stack>
-                            </>
-                        ) : (
-                            <div className="text-secondary">Select a post to view details.</div>
-                        )}
-                    </CardBody>
-                </Card>
+                <PostDetail
+                    post={selectedPost}
+                    folders={folders}
+                />
             </Col>
         </Row>
     );

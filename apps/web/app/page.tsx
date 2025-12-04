@@ -66,7 +66,7 @@ export default function LandingPage() {
                                     href="/ai-review"
                                     style={{borderRadius: "2rem", padding: "0.75rem 2rem"}}
                                 >
-                                    🤖 Start AI Review
+                                    Start AI Review
                                 </Button>
                                 <Button
                                     variant="outline-light"
@@ -74,7 +74,7 @@ export default function LandingPage() {
                                     href="/qa"
                                     style={{borderRadius: "2rem", padding: "0.75rem 2rem"}}
                                 >
-                                    💬 Explore Q&A
+                                    Explore Q&A
                                 </Button>
                             </Stack>
                         </Col>

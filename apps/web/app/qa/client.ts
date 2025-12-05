@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosWithCredentials = axios.create({withCredentials: true});
 
-export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER || "http://localhost:4000";
+export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER || "";
 export const FOLDER_API = `${HTTP_SERVER}/api/folders`;
 export const POST_API = `${HTTP_SERVER}/api/posts`;
 export const STATS_API = `${HTTP_SERVER}/api/stats`;

@@ -1,5 +1,5 @@
 export const API_BASE =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4050/api";
+    process.env.NEXT_PUBLIC_API_URL || "/api";
 
 const defaultOptions: RequestInit = {
     credentials: "include",
@@ -13,6 +13,7 @@ export async function fetchJson<T>(
     options: RequestInit = {}
 ): Promise<T> {
     const response = await fetch(`${API_BASE}${path}`, {
+        cache: "no-store", // Disable Next.js caching
         ...defaultOptions,
         ...options,
         headers: {
@@ -20,10 +21,18 @@ export async function fetchJson<T>(
             ...(options.headers || {}),
         },
     });
+
+    const payload = await response.json().catch(() => null);
+
     if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`);
+        const message =
+            payload?.error?.message ||
+            payload?.message ||
+            `Request failed: ${response.status}`;
+        throw new Error(message);
     }
-    return (await response.json()) as T;
+
+    return (payload as T) ?? ({} as T);
 }
 
 export async function submitAiReview(form: FormData) {
@@ -60,6 +69,37 @@ export async function createPost(payload: {
 }) {
     return fetchJson("/posts", {
         method: "POST",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function registerUser(payload: any) {
+    return fetchJson("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function loginUser(payload: any) {
+    return fetchJson("/auth/login", {
+        method: "POST",
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function fetchSession() {
+    return fetchJson("/auth/session");
+}
+
+export async function logoutUser() {
+    return fetchJson("/auth/logout", {
+        method: "POST",
+    });
+}
+
+export async function updateCurrentUser(payload: any) {
+    return fetchJson("/users/me", {
+        method: "PATCH",
         body: JSON.stringify(payload),
     });
 }

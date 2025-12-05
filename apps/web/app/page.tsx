@@ -20,7 +20,7 @@ export default function LandingPage() {
             const response = await client.fetchStats();
             if (response.data) {
                 setStats([
-                    {label: "Unread items", value: response.data.unreadPosts || 0},
+                    {label: "Admin Posts", value: response.data.adminPosts || 0},
                     {label: "Open questions", value: response.data.unansweredPosts || 0},
                     {label: "Attorney replies", value: response.data.lawyerResponses || 0},
                     {label: "AI reviews this week", value: response.data.totalPosts || 0},
@@ -42,10 +42,9 @@ export default function LandingPage() {
         <div className="mb-4">
             <HeroCard className="mb-4">
                 <Row className="align-items-center">
-                    <Col lg={7}>
+                    <Col lg={12}>
                         <span className="pill pill-glass mb-3">🏠 Boston Renter Protection</span>
                         <h1 className="display-4 fw-bold mb-3">
-                            Where laws can't reach<br/>
                             <span style={{color: "var(--accent-red)"}}>we help you understand</span>
                         </h1>
                         <p className="lead mb-4 opacity-75">
@@ -60,16 +59,6 @@ export default function LandingPage() {
                                 Explore Q&A
                             </Button>
                         </Stack>
-                    </Col>
-                    <Col lg={5} className="mt-4 mt-lg-0 text-center">
-                        <div className="card-glass p-4">
-                            <div className="display-1 mb-3">⚖️</div>
-                            <div className="h4 fw-bold mb-2">NEU · LeaseQA</div>
-                            <div className="small opacity-75">
-                                Piazza-inspired | React-Bootstrap<br/>
-                                MongoDB + Express + Next.js
-                            </div>
-                        </div>
                     </Col>
                 </Row>
             </HeroCard>
@@ -91,13 +80,8 @@ export default function LandingPage() {
                             Upload a PDF or paste lease text. We return rubric-aligned risks
                             and a summary you can reuse in Q&A.
                         </p>
-                        <div className="drop-zone mb-4">
-                            <div style={{fontSize: "2rem"}}>📄</div>
-                            <div className="text-muted-light small mt-2">Drop your lease PDF here</div>
-                        </div>
                         <div className="d-flex gap-2">
                             <Button href="/ai-review" variant="dark" className="btn-pill">Go to AI Review →</Button>
-                            <Button href="/qa/new" variant="outline-secondary" className="btn-pill">Post to Q&A</Button>
                         </div>
                     </AccentCard>
                 </Col>
@@ -118,15 +102,8 @@ export default function LandingPage() {
                             Post questions, search answers, and filter by case type.
                             Linked to AI review results with history and resources.
                         </p>
-                        <div className="mb-4 d-flex flex-wrap gap-2">
-                            {["Lease Review", "Security Deposit", "Maintenance", "Eviction"].map(tag => (
-                                <span key={tag} className="badge badge-pill bg-muted text-muted-light">{tag}</span>
-                            ))}
-                        </div>
                         <div className="d-flex gap-2">
                             <Button href="/qa" variant="primary" className="btn-pill">Open Q&A →</Button>
-                            <Button href="/qa/resources" variant="outline-primary" className="btn-pill">View
-                                Resources</Button>
                         </div>
                     </AccentCard>
                 </Col>

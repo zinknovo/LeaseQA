@@ -25,19 +25,23 @@ type ReviewHistoryItem = {
 const sessionSlice = createSlice({
     name: "session",
     initialState: {
-        status: "authenticated",
-        user: {
-            id: "demo-user",
-            name: "Casey Tenant",
-            email: "casey.tenant@leaseqa.test",
-            role: "tenant" as Role,
-            avatar: "/images/NEU.png",
-        },
+        status: "unauthenticated",
+        user: null,
     } as SessionState,
     reducers: {
         signOut(state) {
             state.status = "unauthenticated";
             state.user = null;
+        },
+        setSession(state, action: PayloadAction<any>) {
+            state.status = "authenticated";
+            state.user = {
+                id: action.payload._id || action.payload.id,
+                name: action.payload.username || action.payload.name,
+                email: action.payload.email,
+                role: action.payload.role,
+                avatar: "/images/NEU.png", // Default avatar
+            };
         },
         signInAsDemo(
             state,
@@ -95,7 +99,7 @@ export type AppStore = typeof store;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-export const {signOut, signInAsDemo} = sessionSlice.actions;
+export const {signOut, signInAsDemo, setSession} = sessionSlice.actions;
 export const {addReview} = aiHistorySlice.actions;
 
 export default store;

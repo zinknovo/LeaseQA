@@ -1,12 +1,45 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { Badge, Button, Card, CardBody, Col, Row, Stack } from "react-bootstrap";
-import { FaRobot, FaSignInAlt, FaUserPlus, FaHistory, FaShieldAlt, FaFileAlt, FaComments, FaBookmark } from "react-icons/fa";
-import { RootState } from "../store";
+import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {Badge, Button, Card, CardBody, Col, Form, Row, Stack} from "react-bootstrap";
+import {
+    FaRobot,
+    FaSignInAlt,
+    FaUserPlus,
+    FaHistory,
+    FaShieldAlt,
+    FaFileAlt,
+    FaComments,
+    FaBookmark,
+    FaEnvelope,
+    FaIdBadge,
+} from "react-icons/fa";
+import {RootState} from "../store";
+import {logoutUser, updateCurrentUser} from "@/app/lib/api";
+import {setSession, signOut} from "@/app/store";
+import {useRouter} from "next/navigation";
 
 export default function AccountPage() {
-    const user = useSelector((state: RootState) => state.session.user);
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const session = useSelector((state: RootState) => state.session);
+    const user = session.user;
+    const isAuthenticated = session.status === "authenticated" && !!user;
+    const [editMode, setEditMode] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+    const [profileForm, setProfileForm] = useState({
+        name: user?.name || "",
+        email: user?.email || "",
+    });
+
+    useEffect(() => {
+        setProfileForm({
+            name: user?.name || "",
+            email: user?.email || "",
+        });
+    }, [user]);
 
     const recentActions = [
         { icon: FaFileAlt, text: "Linked AI review to QA post", time: "2 hours ago" },
@@ -50,11 +83,11 @@ export default function AccountPage() {
                                                 background: "rgba(255,255,255,0.15)",
                                                 border: "1px solid rgba(255,255,255,0.2)",
                                                 borderRadius: "2rem"
-                                            }}
-                                        >
-                                            {user.role === "lawyer" ? "⚖️" : user.role === "admin" ? "🛡️" : "🏠"} {user.role}
-                                        </Badge>
-                                    )}
+                                    }}
+                                >
+                                    {user.role === "lawyer" ? "⚖️" : user.role === "admin" ? "🛡️" : "🏠"} {user.role}
+                                </Badge>
+                            )}
                                 </div>
                             </div>
                         </Col>
@@ -84,103 +117,247 @@ export default function AccountPage() {
                         }}
                     >
                         <CardBody className="p-4">
-                            <div className="d-flex align-items-center gap-3 mb-4">
-                                <div
-                                    className="d-flex align-items-center justify-content-center rounded-circle"
-                                    style={{
-                                        width: 48,
-                                        height: 48,
-                                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                                    }}
-                                >
-                                    <FaShieldAlt className="text-white" size={20} />
-                                </div>
-                                <div>
-                                    <div className="fw-bold">Access Control</div>
-                                    <div className="text-secondary small">Sign in to unlock features</div>
-                                </div>
-                            </div>
-
-                            <p className="text-secondary mb-4">
-                                AI review, posting questions, and attorney replies require authentication.
-                            </p>
-
-                            <Stack gap={3}>
-                                <Button
-                                    variant="dark"
-                                    className="d-flex align-items-center justify-content-center gap-2"
-                                    style={{ borderRadius: "2rem" }}
-                                >
-                                    <FaSignInAlt />
-                                    Sign In
-                                </Button>
-                                <Button
-                                    variant="outline-secondary"
-                                    className="d-flex align-items-center justify-content-center gap-2"
-                                    style={{ borderRadius: "2rem" }}
-                                >
-                                    <FaUserPlus />
-                                    Create Account
-                                </Button>
-                            </Stack>
-                        </CardBody>
-                    </Card>
-                </Col>
-
-                <Col lg={6}>
-                    <Card
-                        className="h-100 border-0 shadow-sm"
-                        style={{
-                            borderRadius: "1rem",
-                            overflow: "hidden",
-                            borderTop: "4px solid #11998e"
-                        }}
-                    >
-                        <CardBody className="p-4">
-                            <div className="d-flex align-items-center gap-3 mb-4">
-                                <div
-                                    className="d-flex align-items-center justify-content-center rounded-circle"
-                                    style={{
-                                        width: 48,
-                                        height: 48,
-                                        background: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)"
-                                    }}
-                                >
-                                    <FaHistory className="text-white" size={20} />
-                                </div>
-                                <div>
-                                    <div className="fw-bold">Recent Activity</div>
-                                    <div className="text-secondary small">Your latest actions</div>
-                                </div>
-                            </div>
-
-                            <Stack gap={3}>
-                                {recentActions.map((action, index) => (
-                                    <div
-                                        key={index}
-                                        className="d-flex align-items-center gap-3 p-3 rounded-3"
-                                        style={{ background: "#f8f9fa" }}
-                                    >
+                            {isAuthenticated ? (
+                                <>
+                                    <div className="d-flex align-items-center gap-3 mb-4">
                                         <div
                                             className="d-flex align-items-center justify-content-center rounded-circle"
                                             style={{
-                                                width: 36,
-                                                height: 36,
-                                                background: "#e9ecef"
+                                                width: 48,
+                                                height: 48,
+                                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                                             }}
                                         >
-                                            <action.icon className="text-secondary" size={14} />
+                                            <FaIdBadge className="text-white" size={20} />
                                         </div>
-                                        <div className="flex-grow-1">
-                                            <div className="small">{action.text}</div>
-                                            <div className="text-secondary small">{action.time}</div>
+                                        <div>
+                                            <div className="fw-bold">Profile overview</div>
+                                            <div className="text-secondary small">Your LeaseQA identity</div>
                                         </div>
                                     </div>
-                                ))}
-                            </Stack>
+
+                                    <Stack gap={3}>
+                                        <div className="d-flex align-items-center gap-3 p-3 rounded-3" style={{ background: "#f8f9fa" }}>
+                                            <FaIdBadge className="text-secondary" />
+                                            <div className="w-100">
+                                                <div className="fw-semibold mb-1">Name</div>
+                                                {editMode ? (
+                                                    <Form.Control
+                                                        value={profileForm.name}
+                                                        onChange={(e) => setProfileForm(prev => ({...prev, name: e.target.value}))}
+                                                        disabled={saving}
+                                                    />
+                                                ) : (
+                                                    <div className="text-secondary small">{user?.name}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="d-flex align-items-center gap-3 p-3 rounded-3" style={{ background: "#f8f9fa" }}>
+                                            <FaEnvelope className="text-secondary" />
+                                            <div className="w-100">
+                                                <div className="fw-semibold mb-1">Email</div>
+                                                {editMode ? (
+                                                    <Form.Control
+                                                        type="email"
+                                                        value={profileForm.email}
+                                                        onChange={(e) => setProfileForm(prev => ({...prev, email: e.target.value}))}
+                                                        disabled={saving}
+                                                    />
+                                                ) : (
+                                                    <div className="text-secondary small">{user?.email}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="d-flex align-items-center gap-3 p-3 rounded-3" style={{ background: "#f8f9fa" }}>
+                                            <FaShieldAlt className="text-secondary" />
+                                            <div>
+                                                <div className="fw-semibold">Role</div>
+                                                <div className="text-secondary small text-capitalize">{user?.role || "tenant"}</div>
+                                            </div>
+                                        </div>
+                                        {error && (
+                                            <div className="text-danger small">{error}</div>
+                                        )}
+                                        <div className="d-flex gap-2">
+                                            {!editMode ? (
+                                                <>
+                                                    <Button
+                                                        variant="outline-secondary"
+                                                        className="flex-fill"
+                                                        onClick={() => {
+                                                            setError("");
+                                                            setEditMode(true);
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline-secondary"
+                                                        className="flex-fill text-danger border-danger"
+                                                        onClick={async () => {
+                                                            try {
+                                                                await logoutUser();
+                                                            } catch (err) {
+                                                                // ignore logout error; user state will still be cleared
+                                                            } finally {
+                                                                dispatch(signOut());
+                                                                router.push("/");
+                                                            }
+                                                        }}
+                                                    >
+                                                        Sign out
+                                                    </Button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        variant="primary"
+                                                        className="flex-fill"
+                                                        disabled={saving}
+                                                        onClick={async () => {
+                                                            setError("");
+                                                            setSaving(true);
+                                                            try {
+                                                                const response = await updateCurrentUser({
+                                                                    username: profileForm.name,
+                                                                    email: profileForm.email,
+                                                                });
+                                                                const updatedUser = (response as any)?.data || response;
+                                                                dispatch(setSession(updatedUser));
+                                                                setEditMode(false);
+                                                            } catch (err: any) {
+                                                                setError(err.message || "Failed to save profile");
+                                                            } finally {
+                                                                setSaving(false);
+                                                            }
+                                                        }}
+                                                    >
+                                                        {saving ? "Saving..." : "Save"}
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline-secondary"
+                                                        className="flex-fill"
+                                                        disabled={saving}
+                                                        onClick={() => {
+                                                            setError("");
+                                                            setProfileForm({
+                                                                name: user?.name || "",
+                                                                email: user?.email || "",
+                                                            });
+                                                            setEditMode(false);
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </Stack>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="d-flex align-items-center gap-3 mb-4">
+                                        <div
+                                            className="d-flex align-items-center justify-content-center rounded-circle"
+                                            style={{
+                                                width: 48,
+                                                height: 48,
+                                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                                            }}
+                                        >
+                                            <FaShieldAlt className="text-white" size={20} />
+                                        </div>
+                                        <div>
+                                            <div className="fw-bold">Access Control</div>
+                                            <div className="text-secondary small">Sign in to unlock features</div>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-secondary mb-4">
+        AI review, posting questions, and attorney replies require authentication.
+                                    </p>
+
+                                    <Stack gap={3}>
+                                        <Button
+                                            href="/auth/login"
+                                            variant="dark"
+                                            className="d-flex align-items-center justify-content-center gap-2"
+                                            style={{ borderRadius: "2rem" }}
+                                        >
+                                            <FaSignInAlt />
+                                            Sign In
+                                        </Button>
+                                        <Button
+                                            href="/auth/register"
+                                            variant="outline-secondary"
+                                            className="d-flex align-items-center justify-content-center gap-2"
+                                            style={{ borderRadius: "2rem" }}
+                                        >
+                                            <FaUserPlus />
+                                            Create Account
+                                        </Button>
+                                    </Stack>
+                                </>
+                            )}
                         </CardBody>
                     </Card>
                 </Col>
+
+                {isAuthenticated && (
+                    <Col lg={6}>
+                        <Card
+                            className="h-100 border-0 shadow-sm"
+                            style={{
+                                borderRadius: "1rem",
+                                overflow: "hidden",
+                                borderTop: "4px solid #11998e"
+                            }}
+                        >
+                            <CardBody className="p-4">
+                                <div className="d-flex align-items-center gap-3 mb-4">
+                                    <div
+                                        className="d-flex align-items-center justify-content-center rounded-circle"
+                                        style={{
+                                            width: 48,
+                                            height: 48,
+                                            background: "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)"
+                                        }}
+                                    >
+                                        <FaHistory className="text-white" size={20} />
+                                    </div>
+                                    <div>
+                                        <div className="fw-bold">Recent Activity</div>
+                                        <div className="text-secondary small">Your latest actions</div>
+                                    </div>
+                                </div>
+
+                                <Stack gap={3}>
+                                    {recentActions.map((action, index) => (
+                                        <div
+                                            key={index}
+                                            className="d-flex align-items-center gap-3 p-3 rounded-3"
+                                            style={{ background: "#f8f9fa" }}
+                                        >
+                                            <div className="d-flex align-items-center justify-content-center rounded-circle"
+                                                 style={{
+                                                     width: 36,
+                                                     height: 36,
+                                                     background: "#e9ecef"
+                                                 }}
+                                            >
+                                                <action.icon className="text-secondary" size={14} />
+                                            </div>
+                                            <div className="flex-grow-1">
+                                                <div className="small">{action.text}</div>
+                                                <div className="text-secondary small">{action.time}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </Stack>
+                            </CardBody>
+                        </Card>
+                    </Col>
+                )}
             </Row>
         </div>
     );

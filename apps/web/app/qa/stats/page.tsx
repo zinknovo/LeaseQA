@@ -5,7 +5,6 @@ import {Card, CardBody, Col, Row} from "react-bootstrap";
 import {FaChartBar, FaFolder} from "react-icons/fa";
 import {Stat} from "../types";
 import * as client from "../client";
-import NavTabs from "../components/NavTabs";
 import CardHeader from "@/components/ui/CardHeader";
 import StatBox from "@/components/ui/StatBox";
 import ProgressItem from "@/components/ui/ProgressItem";
@@ -55,8 +54,6 @@ export default function StatsPage() {
 
     return (
         <div className="mb-4">
-            <NavTabs active="stats"/>
-
             <Row className="g-4">
                 <Col lg={8}>
                     <Card className="card-base card-accent-purple-light">

@@ -92,15 +92,26 @@ export default function AccountPage() {
                             </div>
                         </Col>
                         <Col xs="auto">
-                            <Button
-                                href="/ai-review"
-                                variant="danger"
-                                className="d-flex align-items-center gap-2"
-                                style={{ borderRadius: "2rem", padding: "0.75rem 1.5rem" }}
-                            >
-                                <FaRobot />
-                                Use AI Review
-                            </Button>
+                            {isAuthenticated ? (
+                                <Button
+                                    href="/ai-review"
+                                    variant="danger"
+                                    className="d-flex align-items-center gap-2"
+                                    style={{ borderRadius: "2rem", padding: "0.75rem 1.5rem" }}
+                                >
+                                    <FaRobot />
+                                    Use AI Review
+                                </Button>
+                            ) : (
+                                <div className="d-flex gap-2">
+                                    <Button href="/auth/login" variant="light" className="text-dark">
+                                        Sign In
+                                    </Button>
+                                    <Button href="/auth/register" variant="outline-light">
+                                        Register
+                                    </Button>
+                                </div>
+                            )}
                         </Col>
                     </Row>
                 </CardBody>

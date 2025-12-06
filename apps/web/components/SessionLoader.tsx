@@ -12,9 +12,10 @@ export default function SessionLoader({ children }: { children: React.ReactNode 
         const loadSession = async () => {
             console.log("[SessionLoader] Attempting to fetch session...");
             try {
-                const user = await fetchSession();
+                const payload = await fetchSession();
+                const user = (payload as any)?.data || payload;
                 console.log("[SessionLoader] Session fetched successfully:", user);
-                if (user) {
+                if (user && typeof user === "object") {
                     dispatch(setSession(user));
                 }
             } catch (error) {

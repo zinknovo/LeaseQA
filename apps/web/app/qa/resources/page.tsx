@@ -2,7 +2,6 @@
 
 import { Card, CardBody, Col, Row } from "react-bootstrap";
 import { FaBalanceScale, FaBook, FaFileAlt, FaGavel, FaHandsHelping, FaHome } from "react-icons/fa";
-import NavTabs from "@/app/qa/components/NavTabs";
 import CardHeader from "@/components/ui/CardHeader";
 import ResourceItem from "@/components/ui/ResourceItem";
 import TemplateItem from "@/components/ui/TemplateItem";
@@ -52,8 +51,6 @@ const templates = [
 export default function ResourcesPage() {
     return (
         <div className="mb-4">
-            <NavTabs active="resources" />
-
             <Row className="g-4">
                 <Col lg={8}>
                     <Card className="card-base card-accent-green">

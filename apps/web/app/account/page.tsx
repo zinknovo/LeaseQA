@@ -108,7 +108,7 @@ export default function AccountPage() {
                             </div>
                         </Col>
                         <Col xs="auto">
-                            {isAuthenticated ? (
+                            {isAuthenticated && (
                                 <Button
                                     href="/ai-review"
                                     variant="danger"
@@ -117,15 +117,6 @@ export default function AccountPage() {
                                     <FaRobot/>
                                     Use AI Review
                                 </Button>
-                            ) : (
-                                <div className="d-flex gap-2">
-                                    <Button href="/auth/login" variant="light" className="text-dark">
-                                        Sign In
-                                    </Button>
-                                    <Button href="/auth/register" variant="outline-light">
-                                        Register
-                                    </Button>
-                                </div>
                             )}
                         </Col>
                     </Row>

@@ -84,6 +84,13 @@ export default function QAPage() {
     const searchParams = useSearchParams();
     const scenario = searchParams.get("scenario") || "all";
 
+    const matchesScenario = (post: Post, currentScenario: string) => {
+        if (currentScenario === "all") return true;
+        const needles = SCENARIO_KEYWORDS[currentScenario] || [];
+        const haystack = `${post.summary} ${post.details}`.toLowerCase();
+        return needles.some((word) => haystack.includes(word.toLowerCase()));
+    };
+
     useEffect(() => {
         loadData();
     }, []);
@@ -127,16 +134,15 @@ export default function QAPage() {
                     post.details.toLowerCase().includes(q)
                 );
             }
-            if (scenario && scenario !== "all") {
-                const needles = SCENARIO_KEYWORDS[scenario] || [];
-                const haystack = `${post.summary} ${post.details}`.toLowerCase();
-                return needles.some((word) => haystack.includes(word.toLowerCase()));
-            }
-            return true;
+            return matchesScenario(post, scenario);
         });
     }, [posts, activeFolder, search, scenario]);
 
-    const groupedPosts = useMemo(() => {
+    const scenarioFilteredPosts = useMemo(() => {
+        return posts.filter((post) => matchesScenario(post, scenario));
+    }, [posts, scenario]);
+
+    const recencyBuckets = useMemo(() => {
         const now = new Date();
         const buckets: Record<string, {label: string; items: Post[]}> = {
             thisWeek: {label: "This week", items: []},
@@ -145,7 +151,7 @@ export default function QAPage() {
             earlier: {label: "Earlier", items: []},
         };
 
-        const sorted = [...filteredPosts].sort((a, b) => {
+        const sorted = [...scenarioFilteredPosts].sort((a, b) => {
             const da = new Date(a.createdAt || a.updatedAt || 0).getTime();
             const db = new Date(b.createdAt || b.updatedAt || 0).getTime();
             return db - da;
@@ -167,7 +173,7 @@ export default function QAPage() {
         });
 
         return buckets;
-    }, [filteredPosts]);
+    }, [scenarioFilteredPosts]);
 
     const toggleBucket = (key: string) => {
         setBucketOpen(prev => ({...prev, [key]: !prev[key]}));
@@ -237,7 +243,7 @@ export default function QAPage() {
                             <CardBody className="py-1 px-2">
                                 <div className="small text-secondary mb-1">By recency</div>
                                 <ListGroup>
-                                    {Object.entries(groupedPosts).map(([key, bucket]) => {
+                                    {Object.entries(recencyBuckets).map(([key, bucket]) => {
                                         if (!bucket.items.length) return null;
                                         const open = bucketOpen[key] ?? true;
                                         return (

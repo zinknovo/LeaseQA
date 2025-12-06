@@ -23,7 +23,10 @@ export default function HeaderBar() {
 
     const [showMenu, setShowMenu] = useState(false);
 
-    const initials = user?.name?.slice(0, 2).toUpperCase() || "CA";
+    const initials =
+        user?.name?.slice(0, 2).toUpperCase() ||
+        user?.email?.slice(0, 2).toUpperCase() ||
+        "CA";
 
     const navigate = (href: string) => {
         setShowMenu(false);
@@ -61,7 +64,7 @@ export default function HeaderBar() {
                     </div>
 
                     <Dropdown align="end" show={showMenu} onToggle={setShowMenu}>
-                        <Dropdown.Toggle as={AvatarToggle} initials={initials}/>
+                        <Dropdown.Toggle as={AvatarToggle} initials={initials} isAuthenticated={isAuthenticated}/>
                         <Dropdown.Menu className="shadow-sm profile-menu">
                             <ProfileHeader user={user} initials={initials} isAuthenticated={isAuthenticated}/>
                             <Dropdown.Divider/>

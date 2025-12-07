@@ -191,9 +191,11 @@ export default function QAPage() {
     const makeSnippet = (text: string) => {
         if (!text) return "";
         const clean = text.replace(/\s+/g, " ").trim();
-        if (clean.length <= 140) return clean;
-        return `${clean.slice(0, 140)}…`;
+        if (clean.length <= 240) return clean;
+        return `${clean.slice(0, 240)}…`;
     };
+
+    const getAuthorRole = (post: Post) => post.author?.role || "tenant";
 
     const selectedPost = posts.find(p => p._id === selectedId) || null;
 
@@ -211,13 +213,14 @@ export default function QAPage() {
     return (
         <>
             <Stack direction="horizontal" className="mb-2 flex-wrap align-items-center" gap={2}>
-                <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    onClick={() => setSidebarOpen((v) => !v)}
-                >
-                    {sidebarOpen ? "Hide sidebar" : "Show sidebar"}
-                </Button>
+                <Form.Check
+                    type="switch"
+                    id="toggle-sidebar"
+                    label={sidebarOpen ? "Sidebar on" : "Sidebar off"}
+                    checked={sidebarOpen}
+                    onChange={() => setSidebarOpen((v) => !v)}
+                    className="fw-semibold text-secondary d-flex align-items-center"
+                />
                 <Button
                     size="sm"
                     variant="danger"
@@ -236,10 +239,10 @@ export default function QAPage() {
                 />
             </Stack>
 
-            <Row className="g-3 align-items-start">
+            <Row className="align-items-start" style={{marginLeft: "-0.5rem", marginRight: "-0.5rem", rowGap: "1rem"}}>
                 {sidebarOpen && (
-                    <Col lg={3}>
-                        <Card className="mb-3 card-base shadow-sm h-100">
+                    <Col lg={3} style={{paddingLeft: "0.5rem", paddingRight: "0.5rem"}}>
+                        <Card className="card-base shadow-sm h-100">
                             <CardBody className="p-3">
                                 <div className="small text-secondary mb-2 text-uppercase fw-semibold">By recency</div>
                                 <ListGroup>
@@ -270,12 +273,21 @@ export default function QAPage() {
                                                                 <div className="d-flex justify-content-between align-items-start gap-2">
                                                                     <div>
                                                                         <div className="fw-semibold">{post.summary}</div>
-                                                                        <div className="text-secondary small">
+                                                                        <div
+                                                                            className="text-secondary small"
+                                                                            style={{
+                                                                                display: "-webkit-box",
+                                                                                WebkitLineClamp: 3,
+                                                                                WebkitBoxOrient: "vertical",
+                                                                                overflow: "hidden",
+                                                                            }}
+                                                                        >
                                                                             {makeSnippet(post.details)}
                                                                         </div>
                                                                     </div>
-                                                                    <div className="text-muted small post-timestamp">
-                                                                        {formatTimestamp(post.createdAt)}
+                                                                    <div className="text-muted small text-end" style={{whiteSpace: "nowrap"}}>
+                                                                        <div className="post-timestamp">{formatTimestamp(post.createdAt)}</div>
+                                                                        <div className="text-capitalize">{getAuthorRole(post)}</div>
                                                                     </div>
                                                                 </div>
                                                             </Card>
@@ -291,7 +303,7 @@ export default function QAPage() {
                     </Col>
                 )}
 
-                <Col lg={sidebarOpen ? 9 : 12}>
+                <Col lg={sidebarOpen ? 9 : 12} style={{paddingLeft: "0.5rem", paddingRight: "0.5rem"}}>
                     {!showCompose && (
                         <FeedHeader
                             folders={folders}

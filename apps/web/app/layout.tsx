@@ -23,7 +23,7 @@ export default function RootLayout({children}: { children: ReactNode }) {
                     <HeaderBar/>
 
                     <main className="flex-grow-1">
-                        <div className="py-4 px-4 px-md-5">{children}</div>
+                        <div className="py-4 px-3 px-md-4">{children}</div>
                     </main>
 
                     <footer className="border-top bg-white py-3 px-4 text-secondary small">

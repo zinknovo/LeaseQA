@@ -5,7 +5,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState, signOut} from "@/app/store";
 import {Container, Dropdown, Navbar, NavbarBrand, Stack} from "react-bootstrap";
-import {FaSearch} from "react-icons/fa";
+import {FaBell, FaSearch} from "react-icons/fa";
 import * as client from "@/app/auth/client";
 import AvatarToggle from "./HeaderBar/AvatarToggle";
 import MobileNav from "./HeaderBar/MobileNav";
@@ -22,6 +22,10 @@ export default function HeaderBar() {
     const isAuthenticated = session.status === "authenticated" && !!user;
 
     const [showMenu, setShowMenu] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+    const showHeaderSearch = !pathname?.startsWith("/qa");
+
+    const notifications: {id: string; title: string; href?: string}[] = [];
 
     const initials =
         user?.name?.slice(0, 2).toUpperCase() ||
@@ -58,10 +62,43 @@ export default function HeaderBar() {
                 <MobileNav pathname={pathname}/>
 
                 <Stack direction="horizontal" gap={2}>
-                    <div className="search-box d-none d-md-flex">
-                        <FaSearch className="text-muted-light" size={14}/>
-                        <span className="text-muted-light search-text">Search...</span>
-                    </div>
+                    {showHeaderSearch && (
+                        <div className="search-box d-none d-md-flex">
+                            <FaSearch className="text-muted-light" size={14}/>
+                            <span className="text-muted-light search-text">Search...</span>
+                        </div>
+                    )}
+
+                    <Dropdown align="end" show={showNotifications} onToggle={setShowNotifications}>
+                        <Dropdown.Toggle
+                            as="button"
+                            className="border-0 bg-transparent p-0 d-flex align-items-center"
+                            aria-label="Open notifications"
+                        >
+                            <div className="icon-circle icon-circle-md icon-bg-muted hover-scale" style={{cursor: "pointer"}}>
+                                <FaBell className="text-secondary" size={16}/>
+                            </div>
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu className="shadow-sm" style={{minWidth: 240}}>
+                            <div className="px-3 py-2 fw-semibold">Notifications</div>
+                            <Dropdown.Divider />
+                            {notifications.length === 0 ? (
+                                <div className="px-3 py-2 text-secondary small">No new notifications</div>
+                            ) : (
+                                notifications.map((item) => (
+                                    <Dropdown.Item
+                                        key={item.id}
+                                        onClick={() => {
+                                            setShowNotifications(false);
+                                            if (item.href) navigate(item.href);
+                                        }}
+                                    >
+                                        {item.title}
+                                    </Dropdown.Item>
+                                ))
+                            )}
+                        </Dropdown.Menu>
+                    </Dropdown>
 
                     <Dropdown align="end" show={showMenu} onToggle={setShowMenu}>
                         <Dropdown.Toggle as={AvatarToggle} initials={initials} isAuthenticated={isAuthenticated}/>

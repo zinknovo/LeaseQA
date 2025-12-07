@@ -83,7 +83,3 @@ export type PostDetailProps = {
     post: Post | null;
     folders: Folder[];
 };
-
-export type NavTabsProps = {
-    active?: "qa" | "resources" | "stats" | "manage";
-};

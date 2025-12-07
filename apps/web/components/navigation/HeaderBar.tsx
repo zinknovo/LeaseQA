@@ -27,10 +27,7 @@ export default function HeaderBar() {
 
     const notifications: {id: string; title: string; href?: string}[] = [];
 
-    const initials =
-        user?.name?.slice(0, 2).toUpperCase() ||
-        user?.email?.slice(0, 2).toUpperCase() ||
-        "CA";
+    const initials = user?.name?.slice(0, 2).toUpperCase() || "?";
 
     const navigate = (href: string) => {
         setShowMenu(false);

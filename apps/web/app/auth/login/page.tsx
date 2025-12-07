@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 import {useDispatch} from "react-redux";
 import {setSession} from "@/app/store";
 import {Alert, Button, Card, CardBody, Form} from "react-bootstrap";
-import {loginUser} from "@/app/lib/api";
+import * as client from "../client";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -27,7 +27,7 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            const user = await loginUser(formData);
+            const user = await client.login(formData);
             dispatch(setSession(user.data || user));
             router.push("/account");
         } catch (err: any) {
@@ -45,7 +45,7 @@ export default function LoginPage() {
             <div className="d-flex justify-content-center align-items-center loading-container">
                 <div className="text-center">
                     <div className="spinner-border text-primary mb-3" role="status"/>
-                    <div className="text-secondary">Loading stats...</div>
+                    <div className="text-secondary">Signing in...</div>
                 </div>
             </div>
         );

@@ -8,7 +8,7 @@ import RiskCard from "../../components/ui/RiskCard";
 import ToastNotification, {ToastData} from "@/components/ui/ToastNotification";
 import AccentCard from "@/components/ui/AccentCard";
 import IconCircle from "@/components/ui/IconCircle";
-import {fetchReviews, submitAiReview} from "../lib/api";
+import * as client from "./client";
 
 export default function AIReviewPage() {
     const [state, setState] = useState<ReviewState>({status: "idle"});
@@ -25,7 +25,7 @@ export default function AIReviewPage() {
     const loadReviews = async () => {
         try {
             setLoading(true);
-            const response = await fetchReviews();
+            const response = await client.fetchReviews();
             setReviews((response as any).data || response || []);
         } catch (error) {
             console.error("Failed to load reviews:", error);
@@ -48,7 +48,7 @@ export default function AIReviewPage() {
         formData.set("contractType", "residential");
 
         try {
-            const response = await submitAiReview(formData);
+            const response = await client.submitAiReview(formData);
             const review = (response as any).data || response;
             const aiResponse = review?.aiResponse;
 

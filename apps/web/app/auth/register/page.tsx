@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 import {useDispatch} from "react-redux";
 import {setSession} from "@/app/store";
 import {Alert, Button, Card, CardBody, Form, Modal} from "react-bootstrap";
-import {registerUser} from "@/app/lib/api";
+import * as client from "../client";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -39,7 +39,7 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const user = await registerUser({
+            const user = await client.register({
                 username: formData.username,
                 email: formData.email,
                 password: formData.password,
@@ -62,7 +62,7 @@ export default function RegisterPage() {
             <div className="d-flex justify-content-center align-items-center loading-container">
                 <div className="text-center">
                     <div className="spinner-border text-primary mb-3" role="status"/>
-                    <div className="text-secondary">Loading stats...</div>
+                    <div className="text-secondary">Creating account...</div>
                 </div>
             </div>
         );

@@ -5,18 +5,7 @@ import {useParams, useRouter} from "next/navigation";
 import {Button, Col, Row} from "react-bootstrap";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store";
-import {
-    createDiscussion,
-    deleteAnswer,
-    deleteDiscussion,
-    deletePost,
-    fetchJson,
-    fetchPosts,
-    updateAnswer,
-    updateDiscussion,
-    updatePost,
-    uploadPostAttachments,
-} from "@/app/lib/api";
+import * as client from "../client";
 import "react-quill-new/dist/quill.snow.css";
 
 import {RecencySidebar, PostContent, AnswersSection, DiscussionsSection} from "./components";
@@ -98,7 +87,7 @@ export default function PostDetailPage() {
     const fetchPost = async () => {
         try {
             setLoading(true);
-            const res = await fetchJson<{data: PostDetailData}>(`/posts/${postId}`);
+            const res = await client.fetchPostById(postId);
             const data = (res as any)?.data || (res as any);
             setPost(data);
             setAnswers(data.answers || []);
@@ -115,7 +104,7 @@ export default function PostDetailPage() {
 
     const fetchRecency = async () => {
         try {
-            const res = await fetchPosts({});
+            const res = await client.fetchPosts({});
             setAllPosts((res as any)?.data || res || []);
         } catch (err) {
             console.error("Failed to load recency posts", err);
@@ -130,12 +119,12 @@ export default function PostDetailPage() {
     }, [postId]);
 
     const handleDeletePost = async () => {
-        await deletePost(postId);
+        await client.deletePost(postId);
         router.push("/qa");
     };
 
     const handleSavePost = async () => {
-        await updatePost(postId, {summary: editSummary, details: editDetails});
+        await client.updatePost(postId, {summary: editSummary, details: editDetails});
         setIsEditingPost(false);
         fetchPost();
     };
@@ -148,7 +137,7 @@ export default function PostDetailPage() {
 
     const handleStatusChange = async (status: "open" | "resolved") => {
         setResolvedStatus(status);
-        await updatePost(postId, {status});
+        await client.updatePost(postId, {status});
         fetchPost();
     };
 
@@ -159,17 +148,14 @@ export default function PostDetailPage() {
             return;
         }
         try {
-            const resp = await fetchJson(`/answers`, {
-                method: "POST",
-                body: JSON.stringify({
-                    postId,
-                    content: answerContent,
-                    answerType: currentRole === "lawyer" ? "lawyer_opinion" : "community_answer",
-                }),
+            const resp = await client.createAnswer({
+                postId,
+                content: answerContent,
+                answerType: currentRole === "lawyer" ? "lawyer_opinion" : "community_answer",
             });
             const newAnswer = (resp as any)?.data || resp;
             if (newAnswer?._id && answerFiles.length) {
-                await uploadPostAttachments(postId, answerFiles).catch(console.error);
+                await client.uploadPostAttachments(postId, answerFiles).catch(console.error);
             }
             setAnswerContent("");
             setAnswerFiles([]);
@@ -195,7 +181,7 @@ export default function PostDetailPage() {
 
     const handleSaveAnswerEdit = async (id: string) => {
         if (!answerEditContent.trim()) return;
-        await updateAnswer(id, {content: answerEditContent});
+        await client.updateAnswer(id, {content: answerEditContent});
         setAnswerEditing(null);
         setAnswerEditContent("");
         fetchPost();
@@ -207,7 +193,7 @@ export default function PostDetailPage() {
     };
 
     const handleDeleteAnswer = async (id: string) => {
-        await deleteAnswer(id);
+        await client.deleteAnswer(id);
         fetchPost();
     };
 
@@ -219,7 +205,7 @@ export default function PostDetailPage() {
         const key = parentId || "root";
         const content = discussionDrafts[key] || "";
         if (!content.trim()) return;
-        await createDiscussion({postId, parentId, content});
+        await client.createDiscussion({postId, parentId, content});
         setDiscussionDrafts((prev) => ({...prev, [key]: ""}));
         setDiscussionReplying(null);
         setShowFollowBox(false);
@@ -230,14 +216,14 @@ export default function PostDetailPage() {
     const handleUpdateDiscussion = async (id: string) => {
         const content = discussionDrafts[id] || "";
         if (!content.trim()) return;
-        await updateDiscussion(id, {content});
+        await client.updateDiscussion(id, {content});
         setDiscussionDrafts((prev) => ({...prev, [id]: ""}));
         setDiscussionReplying(null);
         fetchPost();
     };
 
     const handleDeleteDiscussion = async (id: string) => {
-        await deleteDiscussion(id);
+        await client.deleteDiscussion(id);
         fetchPost();
     };
 

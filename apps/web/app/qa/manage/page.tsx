@@ -3,7 +3,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {useSelector} from "react-redux";
 import {useRouter} from "next/navigation";
-import {createFolder, deleteFolder, fetchFoldersApi, updateFolder} from "@/app/lib/api";
+import * as client from "../client";
 import {RootState} from "@/app/store";
 import {Folder} from "../types";
 import {ManageHeader, ManageAlerts, CreateSectionForm, SectionsTable} from "./components";
@@ -42,7 +42,7 @@ export default function ManageSectionsPage() {
         try {
             setLoading(true);
             setError("");
-            const res = await fetchFoldersApi();
+            const res = await client.fetchFolders();
             setFolders((res as any)?.data || res || []);
         } catch (err: any) {
             setError(err.message || "Failed to load sections");
@@ -75,7 +75,7 @@ export default function ManageSectionsPage() {
             return;
         }
         try {
-            await createFolder({
+            await client.createFolder({
                 name: newFolder.name.trim(),
                 displayName: newFolder.displayName.trim(),
                 description: newFolder.description?.trim() || "",
@@ -128,7 +128,7 @@ export default function ManageSectionsPage() {
             return;
         }
         try {
-            await updateFolder(id, {
+            await client.updateFolder(id, {
                 displayName: draft.displayName.trim(),
                 description: draft.description?.trim() || "",
                 color: draft.color,
@@ -161,7 +161,7 @@ export default function ManageSectionsPage() {
         const target = folders.find((f) => f._id === id);
         if (!window.confirm(`Delete section "${target?.displayName || ""}"?`)) return;
         try {
-            await deleteFolder(id);
+            await client.deleteFolder(id);
             setSuccess("Section deleted.");
             loadFolders();
         } catch (err: any) {

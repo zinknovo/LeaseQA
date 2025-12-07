@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 import {FaPaperclip, FaTimes} from "react-icons/fa";
-import {ComposeState, SECTION_OPTIONS} from "../constants";
-import "react-quill-new/dist/quill.snow.css";
+import {ComposeState} from "../constants";
+import {Folder} from "../types";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {ssr: false});
 
-//TODO: resolve this type error
 type ComposeFormProps = {
     composeState: ComposeState;
+    folders: Folder[];
     posting: boolean;
     postError: string;
     onUpdate: (updates: Partial<ComposeState>) => void;
@@ -18,13 +18,14 @@ type ComposeFormProps = {
 };
 
 export default function ComposeForm({
-                                        composeState,
-                                        posting,
-                                        postError,
-                                        onUpdate,
-                                        onSubmit,
-                                        onCancel,
-                                    }: ComposeFormProps) {
+    composeState,
+    folders,
+    posting,
+    postError,
+    onUpdate,
+    onSubmit,
+    onCancel,
+}: ComposeFormProps) {
     const handleAddFolder = (value: string) => {
         if (!value || composeState.folders.includes(value)) return;
         onUpdate({folders: [...composeState.folders, value]});
@@ -37,6 +38,11 @@ export default function ComposeForm({
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files || []);
         onUpdate({files});
+    };
+
+    const getFolderLabel = (name: string) => {
+        const folder = folders.find(f => f.name === name);
+        return folder?.displayName || name;
     };
 
     return (
@@ -96,23 +102,20 @@ export default function ComposeForm({
                         onChange={(e) => handleAddFolder(e.target.value)}
                     >
                         <option value="">Select section...</option>
-                        {SECTION_OPTIONS.map(opt => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        {folders.map(folder => (
+                            <option key={folder.name} value={folder.name}>{folder.displayName}</option>
                         ))}
                     </select>
                     {composeState.folders.length > 0 && (
                         <div className="compose-form-tags">
-                            {composeState.folders.map((f) => {
-                                const label = SECTION_OPTIONS.find(o => o.value === f)?.label || f;
-                                return (
-                                    <span key={f} className="compose-form-tag">
-                                        {label}
-                                        <button type="button" onClick={() => handleRemoveFolder(f)}>
-                                            <FaTimes size={10}/>
-                                        </button>
-                                    </span>
-                                );
-                            })}
+                            {composeState.folders.map((f) => (
+                                <span key={f} className="compose-form-tag">
+                                    {getFolderLabel(f)}
+                                    <button type="button" onClick={() => handleRemoveFolder(f)}>
+                                        <FaTimes size={10}/>
+                                    </button>
+                                </span>
+                            ))}
                         </div>
                     )}
                 </div>

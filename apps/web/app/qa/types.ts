@@ -14,12 +14,7 @@ export type Post = {
     visibility: "class" | "private";
     audience?: "everyone" | "admin";
     folders: string[];
-    attachments?: {
-        filename: string;
-        url: string;
-        mimetype?: string;
-        size?: number;
-    }[];
+    attachments?: Attachment[];
     authorId: string;
     lawyerOnly: boolean;
     fromAIReviewId: string | null;
@@ -32,6 +27,13 @@ export type Post = {
     author?: UserSummary | null;
     answers?: Answer[];
     discussions?: Discussion[];
+};
+
+export type Attachment = {
+    filename: string;
+    url: string;
+    mimetype?: string;
+    size?: number;
 };
 
 export type Answer = {
@@ -82,4 +84,82 @@ export type FeedHeaderProps = {
 export type PostDetailProps = {
     post: Post | null;
     folders: Folder[];
+};
+
+export type PostSidebarProps = {
+    groupedPosts: Record<string, {label: string; items: Post[]}>;
+    bucketOpen: Record<string, boolean>;
+    selectedId: string | null;
+    currentRouteId: string | null;
+    onToggleBucket: (key: string) => void;
+    onSelectPost: (post: Post) => void;
+};
+
+export type RecencySidebarProps = {
+    posts: Post[];
+    currentPostId: string;
+    onSelectPost: (id: string) => void;
+};
+
+export type PostContentProps = {
+    post: Post;
+    canEdit: boolean;
+    isEditing: boolean;
+    editSummary: string;
+    editDetails: string;
+    onEdit: () => void;
+    onDelete: () => void;
+    onSave: () => void;
+    onCancel: () => void;
+    onSummaryChange: (val: string) => void;
+    onDetailsChange: (val: string) => void;
+};
+
+export type AnswersSectionProps = {
+    answers: Answer[];
+    canEditPost: boolean;
+    currentUserId: string | null;
+    currentRole: string | null;
+    resolvedStatus: "open" | "resolved";
+    showAnswerBox: boolean;
+    answerContent: string;
+    answerFocused: boolean;
+    answerFiles: File[];
+    answerEditing: string | null;
+    answerEditContent: string;
+    error: string;
+    onStatusChange: (status: "open" | "resolved") => void;
+    onShowAnswerBox: () => void;
+    onAnswerContentChange: (val: string) => void;
+    onAnswerFocus: () => void;
+    onAnswerFilesChange: (files: File[]) => void;
+    onSubmitAnswer: () => void;
+    onClearAnswer: () => void;
+    onEditAnswer: (id: string, content: string) => void;
+    onEditContentChange: (val: string) => void;
+    onSaveEdit: (id: string) => void;
+    onCancelEdit: () => void;
+    onDeleteAnswer: (id: string) => void;
+};
+
+export type DiscussionsSectionProps = {
+    discussions: Discussion[];
+    currentUserId: string | null;
+    currentRole: string | null;
+    showFollowBox: boolean;
+    followFocused: boolean;
+    discussionDrafts: Record<string, string>;
+    discussionReplying: string | null;
+    discussionEditing: string | null;
+    onShowFollowBox: () => void;
+    onFollowFocus: () => void;
+    onDraftChange: (key: string, val: string) => void;
+    onSubmit: (parentId: string | null) => void;
+    onUpdate: (id: string) => void;
+    onDelete: (id: string) => void;
+    onReply: (id: string) => void;
+    onEdit: (id: string, content: string) => void;
+    onCancelReply: () => void;
+    onCancelEdit: () => void;
+    onClearFollow: () => void;
 };

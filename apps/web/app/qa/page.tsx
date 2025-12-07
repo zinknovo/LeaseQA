@@ -220,6 +220,7 @@ export default function QAPage() {
                     {showCompose ? (
                         <ComposeForm
                             composeState={composeState}
+                            folders={folders}
                             posting={posting}
                             postError={postError}
                             onUpdate={(updates) => setComposeState(prev => ({...prev, ...updates}))}

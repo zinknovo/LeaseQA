@@ -1,40 +1,9 @@
 import {FaEdit, FaTrash, FaReply} from "react-icons/fa";
 import {format} from "date-fns";
 import dynamic from "next/dynamic";
-import "react-quill-new/dist/quill.snow.css";
+import {Discussion, DiscussionsSectionProps} from "../../types";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {ssr: false});
-
-type Discussion = {
-    _id: string;
-    authorId: string;
-    content: string;
-    createdAt: string;
-    replies?: Discussion[];
-    author?: any;
-};
-
-type DiscussionsSectionProps = {
-    discussions: Discussion[];
-    currentUserId: string | null;
-    currentRole: string | null;
-    showFollowBox: boolean;
-    followFocused: boolean;
-    discussionDrafts: Record<string, string>;
-    discussionReplying: string | null;
-    discussionEditing: string | null;
-    onShowFollowBox: () => void;
-    onFollowFocus: () => void;
-    onDraftChange: (key: string, val: string) => void;
-    onSubmit: (parentId: string | null) => void;
-    onUpdate: (id: string) => void;
-    onDelete: (id: string) => void;
-    onReply: (id: string) => void;
-    onEdit: (id: string, content: string) => void;
-    onCancelReply: () => void;
-    onCancelEdit: () => void;
-    onClearFollow: () => void;
-};
 
 export default function DiscussionsSection({
     discussions,

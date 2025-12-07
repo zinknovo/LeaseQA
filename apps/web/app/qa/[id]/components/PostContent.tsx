@@ -1,32 +1,9 @@
 import {FaEdit, FaTrash, FaEye} from "react-icons/fa";
 import {format} from "date-fns";
 import dynamic from "next/dynamic";
+import {PostContentProps} from "../../types";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {ssr: false});
-
-type PostContentProps = {
-    post: {
-        _id: string;
-        summary: string;
-        details: string;
-        folders?: string[];
-        urgency?: string;
-        viewCount?: number;
-        createdAt?: string;
-        author?: any;
-        attachments?: {filename: string; url: string; size?: number}[];
-    };
-    canEdit: boolean;
-    isEditing: boolean;
-    editSummary: string;
-    editDetails: string;
-    onEdit: () => void;
-    onDelete: () => void;
-    onSave: () => void;
-    onCancel: () => void;
-    onSummaryChange: (val: string) => void;
-    onDetailsChange: (val: string) => void;
-};
 
 export default function PostContent({
     post,

@@ -1,27 +1,15 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import dynamic from "next/dynamic";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import Link from "next/link";
-
-import "react-quill-new/dist/quill.snow.css";
+import * as client from "../client";
+import {Folder} from "../types";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {ssr: false});
-
-const folders = [
-    {value: "lease_review", label: "Lease Review"},
-    {value: "security_deposit", label: "Security Deposits"},
-    {value: "maintenance", label: "Maintenance Duties"},
-    {value: "eviction", label: "Evictions & Terminations"},
-    {value: "utilities", label: "Utilities"},
-    {value: "roommate_disputes", label: "Roommate Disputes"},
-    {value: "lease_termination", label: "Early Termination"},
-    {value: "rent_increase", label: "Rent Increases"},
-    {value: "other", label: "Other"},
-];
 
 const schema = z.object({
     postType: z.enum(["question", "note", "poll"]).default("question"),
@@ -38,6 +26,21 @@ type FormValues = z.infer<typeof schema>;
 
 export default function NewPostPage() {
     const [details, setDetails] = useState("");
+    const [folders, setFolders] = useState<Folder[]>([]);
+
+    useEffect(() => {
+        const loadFolders = async () => {
+            try {
+                const response = await client.fetchFolders();
+                console.log("Folders response:", response);
+                setFolders(response.data || []);
+            } catch (error) {
+                console.error("Failed to load folders:", error);
+            }
+        };
+        loadFolders();
+    }, []);
+
     const {
         register,
         handleSubmit,
@@ -60,7 +63,6 @@ export default function NewPostPage() {
     const onSubmit = async (values: FormValues) => {
         console.log("submit", values);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        // TODO: call /api/posts when backend is ready
     };
 
     return (
@@ -129,10 +131,10 @@ export default function NewPostPage() {
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                         {folders.map((folder) => {
-                            const checked = selectedFolders.includes(folder.value);
+                            const checked = selectedFolders.includes(folder.name);
                             return (
                                 <label
-                                    key={folder.value}
+                                    key={folder.name}
                                     className={`flex items-center gap-3 rounded-xl border px-3 py-2 text-sm ${
                                         checked
                                             ? "border-[var(--accent-blue)] bg-[var(--pill-bg-strong)] text-white"
@@ -141,11 +143,11 @@ export default function NewPostPage() {
                                 >
                                     <input
                                         type="checkbox"
-                                        value={folder.value}
+                                        value={folder.name}
                                         {...register("folders")}
                                         className="h-4 w-4 rounded border-white/20 bg-transparent text-[var(--accent-blue)] focus:ring-[color:var(--accent-blue)]"
                                     />
-                                    {folder.label}
+                                    {folder.displayName}
                                 </label>
                             );
                         })}

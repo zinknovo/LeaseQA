@@ -1,24 +1,3 @@
-export const SCENARIO_KEYWORDS: Record<string, string[]> = {
-    all: [],
-    deposit: ["deposit", "escrow", "security deposit", "return deposit"],
-    eviction: ["eviction", "notice", "nonpayment", "14-day", "quit"],
-    repairs: ["repair", "maintenance", "mold", "leak", "habitability"],
-    utilities: ["utility", "heat", "electric", "water", "gas"],
-    leasebreak: ["break lease", "terminate", "early termination"],
-    sublease: ["sublease", "roommate", "assign", "co-tenant"],
-    fees: ["late fee", "rent", "payment plan", "fee"],
-};
-
-export const SECTION_OPTIONS = [
-    {value: "deposit", label: "Security Deposit"},
-    {value: "eviction", label: "Eviction / Notice"},
-    {value: "repairs", label: "Repairs & Habitability"},
-    {value: "utilities", label: "Utilities / Heat"},
-    {value: "leasebreak", label: "Breaking a Lease"},
-    {value: "sublease", label: "Sublease / Roommates"},
-    {value: "fees", label: "Late Fees / Rent"},
-];
-
 export type ComposeState = {
     summary: string;
     details: string;

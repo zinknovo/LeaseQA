@@ -2,44 +2,9 @@ import {useRef} from "react";
 import {FaEdit, FaTrash, FaPaperclip} from "react-icons/fa";
 import {format} from "date-fns";
 import dynamic from "next/dynamic";
+import {Answer, AnswersSectionProps} from "../../types";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {ssr: false});
-
-type Answer = {
-    _id: string;
-    authorId: string;
-    answerType: string;
-    content: string;
-    createdAt: string;
-    author?: any;
-};
-
-type AnswersSectionProps = {
-    answers: Answer[];
-    canEditPost: boolean;
-    currentUserId: string | null;
-    currentRole: string | null;
-    resolvedStatus: "open" | "resolved";
-    showAnswerBox: boolean;
-    answerContent: string;
-    answerFocused: boolean;
-    answerFiles: File[];
-    answerEditing: string | null;
-    answerEditContent: string;
-    error: string;
-    onStatusChange: (status: "open" | "resolved") => void;
-    onShowAnswerBox: () => void;
-    onAnswerContentChange: (val: string) => void;
-    onAnswerFocus: () => void;
-    onAnswerFilesChange: (files: File[]) => void;
-    onSubmitAnswer: () => void;
-    onClearAnswer: () => void;
-    onEditAnswer: (id: string, content: string) => void;
-    onEditContentChange: (val: string) => void;
-    onSaveEdit: (id: string) => void;
-    onCancelEdit: () => void;
-    onDeleteAnswer: (id: string) => void;
-};
 
 export default function AnswersSection({
     answers,

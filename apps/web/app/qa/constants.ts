@@ -7,7 +7,6 @@ export const SCENARIO_KEYWORDS: Record<string, string[]> = {
     leasebreak: ["break lease", "terminate", "early termination"],
     sublease: ["sublease", "roommate", "assign", "co-tenant"],
     fees: ["late fee", "rent", "payment plan", "fee"],
-    harassment: ["harass", "retaliation", "lockout", "privacy"],
 };
 
 export const SECTION_OPTIONS = [
@@ -18,7 +17,6 @@ export const SECTION_OPTIONS = [
     {value: "leasebreak", label: "Breaking a Lease"},
     {value: "sublease", label: "Sublease / Roommates"},
     {value: "fees", label: "Late Fees / Rent"},
-    {value: "harassment", label: "Landlord Harassment"},
 ];
 
 export type ComposeState = {

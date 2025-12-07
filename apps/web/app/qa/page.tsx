@@ -20,6 +20,8 @@ export default function QAPage() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const scenario = searchParams.get("scenario") || "all";
+    const searchParam = searchParams.get("search") || "";
+    const composeParam = searchParams.get("compose") === "1";
     const currentRouteId = pathname?.startsWith("/qa/") ? pathname.split("/").pop() || null : null;
 
     const [folders, setFolders] = useState<Folder[]>([]);
@@ -44,8 +46,9 @@ export default function QAPage() {
     }, []);
 
     useEffect(() => {
-        setShowCompose(false);
-    }, [scenario]);
+        setShowCompose(composeParam);
+        setSearch(searchParam);
+    }, [composeParam, searchParam, scenario]);
 
     const loadData = async () => {
         try {

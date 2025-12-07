@@ -49,8 +49,24 @@ export default function HeaderBar() {
                 <div className="d-flex align-items-center gap-2">
                     <Navbar.Toggle aria-controls="mobile-navbar-nav" className="d-md-none border-0 p-0 me-2"/>
                     <NavbarBrand className="d-flex align-items-center gap-2 me-0">
-                        <span className="fw-bold">LeaseQA</span>
-                        <span className="d-none d-lg-inline text-muted-light header-tagline">
+                        <span
+                            className="fw-bold"
+                            style={{
+                                fontFamily: "Poppins, 'Inter', sans-serif",
+                                letterSpacing: "0.3px",
+                                fontSize: "1.05rem",
+                            }}
+                        >
+                            LeaseQA
+                        </span>
+                        <span
+                            className="d-none d-lg-inline text-muted-light header-tagline"
+                            style={{
+                                fontFamily: "Poppins, 'Inter', sans-serif",
+                                letterSpacing: "0.4px",
+                                fontWeight: 500,
+                            }}
+                        >
                             · where statutes can't reach
                         </span>
                     </NavbarBrand>

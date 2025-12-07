@@ -10,6 +10,7 @@ export default function ScenarioFilter() {
     const searchParams = useSearchParams();
     const activeScenario = searchParams.get("scenario") || "all";
     const [folders, setFolders] = useState<Folder[]>([]);
+    const MAX_CHIPS = 7;
 
     useEffect(() => {
         const loadFolders = async () => {
@@ -39,7 +40,14 @@ export default function ScenarioFilter() {
             >
                 All
             </button>
-            {folders.map((folder) => (
+            {folders
+                .slice(0, MAX_CHIPS - (activeScenario !== "all" && !folders.slice(0, MAX_CHIPS).some(f => f.name === activeScenario) ? 1 : 0))
+                .concat(
+                    activeScenario !== "all" && !folders.slice(0, MAX_CHIPS).some(f => f.name === activeScenario)
+                        ? folders.filter(f => f.name === activeScenario)
+                        : []
+                )
+                .map((folder) => (
                 <button
                     key={folder.name}
                     className={`scenario-chip ${activeScenario === folder.name ? "active" : ""}`}

@@ -1,17 +1,21 @@
 "use client";
 
 import {useParams, useRouter} from "next/navigation";
+import {useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store";
 import * as client from "../client";
 import {AnswersSection, DiscussionsSection, PostContent, RecencySidebar} from "./components";
 import {usePostDetail, usePostEdit, useAnswers, useDiscussions} from "./hooks";
+import ScenarioFilter from "../components/ScenarioFilter";
+import {FaPlus, FaSearch} from "react-icons/fa";
 
 export default function PostDetailPage() {
     const params = useParams();
     const postId = Array.isArray(params?.id) ? params.id[0] : (params?.id as string);
     const router = useRouter();
+    const [search, setSearch] = useState("");
     const session = useSelector((state: RootState) => state.session);
     const currentUserId = session.user?.id || (session.user as any)?._id;
     const currentRole = session.user?.role;
@@ -123,7 +127,33 @@ export default function PostDetailPage() {
     }
 
     return (
-        <Row className="g-2 mx-0">
+        <>
+            <ScenarioFilter/>
+            <div className="qa-toolbar">
+                <div className="qa-toolbar-search">
+                    <FaSearch size={14} className="qa-toolbar-search-icon"/>
+                    <input
+                        type="text"
+                        placeholder="Search posts..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                router.push(`/qa?search=${encodeURIComponent(search)}`);
+                            }
+                        }}
+                    />
+                </div>
+                <button
+                    className="qa-toolbar-btn primary"
+                    onClick={() => router.push("/qa?compose=1")}
+                >
+                    <FaPlus size={12}/>
+                    <span>New Post</span>
+                </button>
+            </div>
+
+            <Row className="g-2 mx-0">
             <Col lg={3} className="px-1">
                 <RecencySidebar
                     posts={allPosts}
@@ -197,5 +227,6 @@ export default function PostDetailPage() {
                 />
             </Col>
         </Row>
+        </>
     );
 }

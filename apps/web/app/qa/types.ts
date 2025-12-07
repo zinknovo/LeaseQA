@@ -86,19 +86,13 @@ export type PostDetailProps = {
     folders: Folder[];
 };
 
-export type PostSidebarProps = {
-    groupedPosts: Record<string, {label: string; items: Post[]}>;
-    bucketOpen: Record<string, boolean>;
-    selectedId: string | null;
-    currentRouteId: string | null;
-    onToggleBucket: (key: string) => void;
-    onSelectPost: (post: Post) => void;
-};
-
 export type RecencySidebarProps = {
     posts: Post[];
-    currentPostId: string;
+    currentPostId: string | null;
     onSelectPost: (id: string) => void;
+    folderDisplayMap?: Record<string, string>;
+    bucketOpen: Record<string, boolean>;
+    onToggleBucket: (key: string) => void;
 };
 
 export type PostContentProps = {

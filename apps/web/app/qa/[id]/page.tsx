@@ -1,32 +1,59 @@
 "use client";
 
 import {useParams, useRouter} from "next/navigation";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {Button, Col, Row} from "react-bootstrap";
 import {useSelector} from "react-redux";
 import {RootState} from "@/app/store";
 import * as client from "../client";
-import {AnswersSection, DiscussionsSection, PostContent, RecencySidebar} from "./components";
-import {usePostDetail, usePostEdit, useAnswers, useDiscussions} from "./hooks";
+import {AnswersSection, DiscussionsSection, PostContent} from "./components";
+import {useAnswers, useDiscussions, usePostDetail, usePostEdit} from "./hooks";
 import ScenarioFilter from "../components/ScenarioFilter";
-import {FaPlus, FaSearch} from "react-icons/fa";
+import QAToolbar from "../components/QAToolbar";
+import RecencySidebar from "../components/RecencySidebar";
 
 export default function PostDetailPage() {
     const params = useParams();
     const postId = Array.isArray(params?.id) ? params.id[0] : (params?.id as string);
     const router = useRouter();
-    const [search, setSearch] = useState("");
     const session = useSelector((state: RootState) => state.session);
     const currentUserId = session.user?.id || (session.user as any)?._id;
     const currentRole = session.user?.role;
 
-    const {post, allPosts, folders, loading, error, setError, answers, discussions, resolvedStatus, setResolvedStatus, refetch} = usePostDetail(postId);
+    const [bucketOpen, setBucketOpen] = useState<Record<string, boolean>>({
+        thisWeek: true,
+        lastWeek: false,
+        thisMonth: false,
+        earlier: false,
+    });
+
+    const {
+        post,
+        allPosts,
+        folders,
+        loading,
+        error,
+        setError,
+        answers,
+        discussions,
+        resolvedStatus,
+        setResolvedStatus,
+        refetch
+    } = usePostDetail(postId);
+    
     const postEdit = usePostEdit(post);
     const answerState = useAnswers();
     const discussionState = useDiscussions();
 
     const isAuthor = post && currentUserId && post.authorId?.toString() === currentUserId;
     const canEditPost = isAuthor || currentRole === "admin";
+
+    const folderDisplayMap = useMemo(() => {
+        return folders.reduce<Record<string, string>>((acc, f) => {
+            acc[f.name] = f.displayName || f.name;
+            return acc;
+        }, {});
+    }, [folders]);
 
     const handleDeletePost = async () => {
         await client.deletePost(postId);
@@ -129,108 +156,85 @@ export default function PostDetailPage() {
     return (
         <>
             <ScenarioFilter/>
-            <div className="qa-toolbar">
-                <div className="qa-toolbar-search">
-                    <FaSearch size={14} className="qa-toolbar-search-icon"/>
-                    <input
-                        type="text"
-                        placeholder="Search posts..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                router.push(`/qa?search=${encodeURIComponent(search)}`);
-                            }
-                        }}
+            <QAToolbar/>
+
+            <Row className="g-3 mx-0">
+                <Col lg={3} className="px-1">
+                    <RecencySidebar
+                        posts={allPosts}
+                        currentPostId={postId}
+                        onSelectPost={(id) => router.push(`/qa/${id}`)}
+                        folderDisplayMap={folderDisplayMap}
+                        bucketOpen={bucketOpen}
+                        onToggleBucket={(key) => setBucketOpen(prev => ({...prev, [key]: !prev[key]}))}
                     />
-                </div>
-                <button
-                    className="qa-toolbar-btn primary"
-                    onClick={() => router.push("/qa?compose=1")}
-                >
-                    <FaPlus size={12}/>
-                    <span>New Post</span>
-                </button>
-            </div>
+                </Col>
 
-            <Row className="g-2 mx-0">
-            <Col lg={3} className="px-1">
-                <RecencySidebar
-                    posts={allPosts}
-                    currentPostId={postId}
-                    onSelectPost={(id) => router.push(`/qa/${id}`)}
-                    folderDisplayMap={folders.reduce<Record<string, string>>((acc, f) => {
-                        acc[f.name] = f.displayName || f.name;
-                        return acc;
-                    }, {})}
-                />
-            </Col>
+                <Col lg={9} className="px-1">
+                    <PostContent
+                        post={post}
+                        canEdit={canEditPost || false}
+                        isEditing={postEdit.isEditing}
+                        editSummary={postEdit.editSummary}
+                        editDetails={postEdit.editDetails}
+                        onEdit={postEdit.startEdit}
+                        onDelete={handleDeletePost}
+                        onSave={handleSavePost}
+                        onCancel={postEdit.cancelEdit}
+                        onSummaryChange={postEdit.setEditSummary}
+                        onDetailsChange={postEdit.setEditDetails}
+                    />
 
-            <Col lg={9} className="px-1">
-                <PostContent
-                    post={post}
-                    canEdit={canEditPost || false}
-                    isEditing={postEdit.isEditing}
-                    editSummary={postEdit.editSummary}
-                    editDetails={postEdit.editDetails}
-                    onEdit={postEdit.startEdit}
-                    onDelete={handleDeletePost}
-                    onSave={handleSavePost}
-                    onCancel={postEdit.cancelEdit}
-                    onSummaryChange={postEdit.setEditSummary}
-                    onDetailsChange={postEdit.setEditDetails}
-                />
+                    <AnswersSection
+                        answers={answers}
+                        canEditPost={canEditPost || false}
+                        currentUserId={currentUserId}
+                        currentRole={currentRole || null}
+                        resolvedStatus={resolvedStatus}
+                        showAnswerBox={answerState.showAnswerBox}
+                        answerContent={answerState.answerContent}
+                        answerFocused={answerState.answerFocused}
+                        answerFiles={answerState.answerFiles}
+                        answerEditing={answerState.answerEditing}
+                        answerEditContent={answerState.answerEditContent}
+                        error={error}
+                        onStatusChange={handleStatusChange}
+                        onShowAnswerBox={() => answerState.setShowAnswerBox(true)}
+                        onAnswerContentChange={answerState.setAnswerContent}
+                        onAnswerFocus={() => answerState.setAnswerFocused(true)}
+                        onAnswerFilesChange={answerState.setAnswerFiles}
+                        onSubmitAnswer={handleSubmitAnswer}
+                        onClearAnswer={answerState.clearAnswer}
+                        onEditAnswer={answerState.startEditAnswer}
+                        onEditContentChange={answerState.setAnswerEditContent}
+                        onSaveEdit={handleSaveAnswerEdit}
+                        onCancelEdit={answerState.cancelEditAnswer}
+                        onDeleteAnswer={handleDeleteAnswer}
+                    />
 
-                <AnswersSection
-                    answers={answers}
-                    canEditPost={canEditPost || false}
-                    currentUserId={currentUserId}
-                    currentRole={currentRole || null}
-                    resolvedStatus={resolvedStatus}
-                    showAnswerBox={answerState.showAnswerBox}
-                    answerContent={answerState.answerContent}
-                    answerFocused={answerState.answerFocused}
-                    answerFiles={answerState.answerFiles}
-                    answerEditing={answerState.answerEditing}
-                    answerEditContent={answerState.answerEditContent}
-                    error={error}
-                    onStatusChange={handleStatusChange}
-                    onShowAnswerBox={() => answerState.setShowAnswerBox(true)}
-                    onAnswerContentChange={answerState.setAnswerContent}
-                    onAnswerFocus={() => answerState.setAnswerFocused(true)}
-                    onAnswerFilesChange={answerState.setAnswerFiles}
-                    onSubmitAnswer={handleSubmitAnswer}
-                    onClearAnswer={answerState.clearAnswer}
-                    onEditAnswer={answerState.startEditAnswer}
-                    onEditContentChange={answerState.setAnswerEditContent}
-                    onSaveEdit={handleSaveAnswerEdit}
-                    onCancelEdit={answerState.cancelEditAnswer}
-                    onDeleteAnswer={handleDeleteAnswer}
-                />
-
-                <DiscussionsSection
-                    discussions={discussions}
-                    currentUserId={currentUserId}
-                    currentRole={currentRole || null}
-                    showFollowBox={discussionState.showFollowBox}
-                    followFocused={discussionState.followFocused}
-                    discussionDrafts={discussionState.discussionDrafts}
-                    discussionReplying={discussionState.discussionReplying}
-                    discussionEditing={discussionState.discussionEditing}
-                    onShowFollowBox={() => discussionState.setShowFollowBox(true)}
-                    onFollowFocus={() => discussionState.setFollowFocused(true)}
-                    onDraftChange={discussionState.updateDraft}
-                    onSubmit={handleSubmitDiscussion}
-                    onUpdate={handleUpdateDiscussion}
-                    onDelete={handleDeleteDiscussion}
-                    onReply={discussionState.startReply}
-                    onEdit={discussionState.startEdit}
-                    onCancelReply={discussionState.cancelReply}
-                    onCancelEdit={discussionState.cancelEdit}
-                    onClearFollow={discussionState.clearFollow}
-                />
-            </Col>
-        </Row>
+                    <DiscussionsSection
+                        discussions={discussions}
+                        currentUserId={currentUserId}
+                        currentRole={currentRole || null}
+                        showFollowBox={discussionState.showFollowBox}
+                        followFocused={discussionState.followFocused}
+                        discussionDrafts={discussionState.discussionDrafts}
+                        discussionReplying={discussionState.discussionReplying}
+                        discussionEditing={discussionState.discussionEditing}
+                        onShowFollowBox={() => discussionState.setShowFollowBox(true)}
+                        onFollowFocus={() => discussionState.setFollowFocused(true)}
+                        onDraftChange={discussionState.updateDraft}
+                        onSubmit={handleSubmitDiscussion}
+                        onUpdate={handleUpdateDiscussion}
+                        onDelete={handleDeleteDiscussion}
+                        onReply={discussionState.startReply}
+                        onEdit={discussionState.startEdit}
+                        onCancelReply={discussionState.cancelReply}
+                        onCancelEdit={discussionState.cancelEdit}
+                        onClearFollow={discussionState.clearFollow}
+                    />
+                </Col>
+            </Row>
         </>
     );
 }

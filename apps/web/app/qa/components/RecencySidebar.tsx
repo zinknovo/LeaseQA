@@ -1,32 +1,16 @@
-import {FaChevronDown} from "react-icons/fa";
+import {FaChevronDown, FaChevronRight} from "react-icons/fa";
 import {format} from "date-fns";
-import {useMemo, useState} from "react";
+import {useMemo} from "react";
+import {Post, RecencySidebarProps} from "../types";
 
-type Post = {
-    _id: string;
-    summary: string;
-    folders?: string[];
-    details?: string;
-    author?: {username?: string; email?: string; role?: string};
-    authorId?: string;
-    createdAt?: string;
-};
-
-type RecencySidebarProps = {
-    posts: Post[];
-    currentPostId: string;
-    onSelectPost: (id: string) => void;
-    folderDisplayMap?: Record<string, string>;
-};
-
-export default function RecencySidebar({posts, currentPostId, onSelectPost, folderDisplayMap = {}}: RecencySidebarProps) {
-    const [open, setOpen] = useState<Record<string, boolean>>({
-        thisWeek: true,
-        lastWeek: true,
-        thisMonth: false,
-        earlier: false,
-    });
-
+export default function RecencySidebar({
+    posts,
+    currentPostId,
+    onSelectPost,
+    folderDisplayMap = {},
+    bucketOpen,
+    onToggleBucket,
+}: RecencySidebarProps) {
     const grouped = useMemo(() => {
         const now = new Date();
         const buckets: Record<string, {label: string; items: Post[]}> = {
@@ -74,21 +58,21 @@ export default function RecencySidebar({posts, currentPostId, onSelectPost, fold
         <div className="post-sidebar">
             {Object.entries(grouped).map(([key, bucket]) => {
                 if (!bucket.items.length) return null;
-                const isOpen = open[key];
+                const isOpen = bucketOpen[key] ?? true;
                 return (
                     <div className="post-sidebar-group" key={key}>
                         <button
                             type="button"
-                            className="post-sidebar-header border-0 bg-transparent w-100 text-start"
-                            onClick={() => setOpen((prev) => ({...prev, [key]: !prev[key]}))}
+                            className="post-sidebar-header"
+                            onClick={() => onToggleBucket(key)}
                         >
-                            <FaChevronDown size={10} className={isOpen ? "" : "rotate-90"}/>
+                            {isOpen ? <FaChevronDown size={10}/> : <FaChevronRight size={10}/>}
                             <span>{bucket.label}</span>
                             <span className="post-sidebar-count">{bucket.items.length}</span>
                         </button>
                         {isOpen && (
                             <div className="post-sidebar-items">
-                                {bucket.items.slice(0, 15).map((p) => {
+                                {bucket.items.map((p) => {
                                     const isActive = p._id === currentPostId;
                                     return (
                                         <div
@@ -96,34 +80,32 @@ export default function RecencySidebar({posts, currentPostId, onSelectPost, fold
                                             className={`post-sidebar-item ${isActive ? "active" : ""}`}
                                             onClick={() => onSelectPost(p._id)}
                                         >
-                                            <div className="d-flex justify-content-between align-items-start gap-2 mb-1">
-                                                <div className="post-sidebar-item-title">{p.summary}</div>
-                                                <div className="d-flex gap-1 flex-wrap justify-content-end text-uppercase" style={{fontSize: "0.65rem"}}>
-                                                    <span className="badge rounded-pill bg-light text-secondary border">
-                                                        {getRole(p)}
+                                            <div className="post-sidebar-item-title mb-1">{p.summary}</div>
+                                            <div className="d-flex gap-1 flex-wrap mb-2" style={{fontSize: "0.65rem"}}>
+                                                <span className="badge rounded-pill bg-light text-secondary border text-uppercase">
+                                                    {getRole(p)}
+                                                </span>
+                                                <span className="badge rounded-pill bg-light text-secondary border text-uppercase">
+                                                    {p.createdAt ? format(new Date(p.createdAt), "MMM d") : ""}
+                                                </span>
+                                                {getFolder(p) && (
+                                                    <span className="badge rounded-pill bg-light text-secondary border text-capitalize">
+                                                        {getFolder(p)}
                                                     </span>
-                                                    <span className="badge rounded-pill bg-light text-secondary border">
-                                                        {p.createdAt ? format(new Date(p.createdAt), "MMM d") : ""}
-                                                    </span>
-                                                    {getFolder(p) && (
-                                                        <span className="badge rounded-pill bg-light text-secondary border text-capitalize">
-                                                            {getFolder(p)}
-                                                        </span>
-                                                    )}
-                                                </div>
+                                                )}
                                             </div>
                                             <div
                                                 className="post-sidebar-item-snippet"
                                                 style={{
                                                     display: "-webkit-box",
-                                                    WebkitLineClamp: 3,
+                                                    WebkitLineClamp: 2,
                                                     WebkitBoxOrient: "vertical",
                                                     overflow: "hidden",
                                                 }}
                                             >
                                                 {makeSnippet(p.details || "")}
                                             </div>
-                                            <div className="post-sidebar-item-meta text-secondary small text-truncate">
+                                            <div className="post-sidebar-item-meta text-secondary small text-truncate mt-1">
                                                 {getAuthor(p)}
                                             </div>
                                         </div>

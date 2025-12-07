@@ -8,5 +8,4 @@ export type {
     PostContentProps,
     AnswersSectionProps,
     DiscussionsSectionProps,
-    RecencySidebarProps,
 } from "../types";

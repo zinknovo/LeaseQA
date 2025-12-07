@@ -1,28 +1,26 @@
 "use client";
 
 import {useEffect, useMemo, useState} from "react";
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {Col, Row} from "react-bootstrap";
-import {FaPlus, FaSearch} from "react-icons/fa";
 
 import {Folder, Post} from "./types";
 import {ComposeState, INITIAL_COMPOSE_STATE} from "./constants";
 import * as client from "./client";
 
 import ScenarioFilter from "./components/ScenarioFilter";
-import PostSidebar from "./components/PostSidebar";
+import QAToolbar from "./components/QAToolbar";
+import RecencySidebar from "./components/RecencySidebar";
 import FeedHeader from "./components/FeedHeader";
 import ComposeForm from "./components/ComposeForm";
 import PostDetail from "./components/PostDetail";
 
 export default function QAPage() {
     const router = useRouter();
-    const pathname = usePathname();
     const searchParams = useSearchParams();
     const scenario = searchParams.get("scenario") || "all";
     const searchParam = searchParams.get("search") || "";
     const composeParam = searchParams.get("compose") === "1";
-    const currentRouteId = pathname?.startsWith("/qa/") ? pathname.split("/").pop() || null : null;
 
     const [folders, setFolders] = useState<Folder[]>([]);
     const [posts, setPosts] = useState<Post[]>([]);
@@ -81,33 +79,9 @@ export default function QAPage() {
         });
     }, [posts, search, scenario]);
 
-    const groupedPosts = useMemo(() => {
-        const now = new Date();
-        const buckets: Record<string, {label: string; items: Post[]}> = {
-            thisWeek: {label: "This week", items: []},
-            lastWeek: {label: "Last week", items: []},
-            thisMonth: {label: "Earlier this month", items: []},
-            earlier: {label: "Earlier", items: []},
-        };
-        const sorted = [...filteredPosts].sort((a, b) => {
-            const da = new Date(a.createdAt || a.updatedAt || 0).getTime();
-            const db = new Date(b.createdAt || b.updatedAt || 0).getTime();
-            return db - da;
-        });
-        sorted.forEach((post) => {
-            const created = new Date(post.createdAt || post.updatedAt || 0);
-            const diffDays = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
-            if (diffDays <= 6) buckets.thisWeek.items.push(post);
-            else if (diffDays <= 13) buckets.lastWeek.items.push(post);
-            else if (diffDays <= 30) buckets.thisMonth.items.push(post);
-            else buckets.earlier.items.push(post);
-        });
-        return buckets;
-    }, [filteredPosts]);
-
-    const handleSelectPost = (post: Post) => {
-        setSelectedId(post._id);
-        router.push(`/qa/${post._id}`);
+    const handleSelectPost = (id: string) => {
+        setSelectedId(id);
+        router.push(`/qa/${id}`);
     };
 
     const resetCompose = () => {
@@ -172,37 +146,18 @@ export default function QAPage() {
     return (
         <>
             <ScenarioFilter/>
-
-            <div className="qa-toolbar">
-                <div className="qa-toolbar-search">
-                    <FaSearch size={14} className="qa-toolbar-search-icon"/>
-                    <input
-                        type="text"
-                        placeholder="Search posts..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </div>
-                <button className="qa-toolbar-btn primary" onClick={() => {
-                    setShowCompose(true);
-                    setSelectedId(null);
-                }}>
-                    <FaPlus size={12}/>
-                    <span>New Post</span>
-                </button>
-            </div>
+            <QAToolbar initialSearch={searchParam} onSearchChange={setSearch}/>
 
             <Row className="g-3 mx-0">
                 {sidebarOpen && (
                     <Col lg={3} className="px-1">
-                        <PostSidebar
-                            groupedPosts={groupedPosts}
-                            bucketOpen={bucketOpen}
-                            selectedId={selectedId}
-                            currentRouteId={currentRouteId}
-                            onToggleBucket={(key) => setBucketOpen(prev => ({...prev, [key]: !prev[key]}))}
+                        <RecencySidebar
+                            posts={filteredPosts}
+                            currentPostId={selectedId}
                             onSelectPost={handleSelectPost}
                             folderDisplayMap={folderDisplayMap}
+                            bucketOpen={bucketOpen}
+                            onToggleBucket={(key) => setBucketOpen(prev => ({...prev, [key]: !prev[key]}))}
                         />
                     </Col>
                 )}

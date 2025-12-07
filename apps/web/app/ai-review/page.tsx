@@ -202,7 +202,6 @@ export default function AIReviewPage() {
                             )
                         ) : (
                             <div className="text-center py-4 rounded-3 bg-muted">
-                                <FaCloudUploadAlt size={30} className="text-muted-light mb-2"/>
                                 <div className="text-muted-light small">Sign in to view your review history.</div>
                                 <div className="mt-2">
                                     <Button href="/auth/login" variant="primary" size="sm" className="btn-pill">Sign in</Button>

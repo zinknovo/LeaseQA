@@ -85,6 +85,42 @@ export default function InfoPage() {
                     );
                 })}
             </Row>
+
+            <div className="small text-secondary mb-3 fw-semibold">GITHUB</div>
+            <Card className="border-0 shadow-sm" style={{borderRadius: "1rem", overflow: "hidden"}}>
+                <CardBody className="p-4">
+                    <Row className="g-3">
+                        <Col md={6}>
+                            <div className="p-3 rounded-3 h-100" style={{background: "#f8f9fa"}}>
+                                <div className="fw-bold mb-1">Frontend (Next.js)</div>
+                                <div className="text-secondary small mb-2">LeaseQA client app</div>
+                                <a
+                                    href="https://github.com/zinknovo/leaseqa-client"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-decoration-none fw-semibold"
+                                >
+                                    github.com/zinknovo/leaseqa-client →
+                                </a>
+                            </div>
+                        </Col>
+                        <Col md={6}>
+                            <div className="p-3 rounded-3 h-100" style={{background: "#f8f9fa"}}>
+                                <div className="fw-bold mb-1">Backend (Express)</div>
+                                <div className="text-secondary small mb-2">LeaseQA API server</div>
+                                <a
+                                    href="https://github.com/zinknovo/leaseqa-server"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-decoration-none fw-semibold"
+                                >
+                                    github.com/zinknovo/leaseqa-server →
+                                </a>
+                            </div>
+                        </Col>
+                    </Row>
+                </CardBody>
+            </Card>
         </div>
     );
 }

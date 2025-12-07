@@ -1,10 +1,12 @@
 import {useCallback, useEffect, useState} from "react";
 import {PostDetailData, Answer, Discussion} from "./types";
+import {Folder} from "../types";
 import * as client from "../client";
 
 export function usePostDetail(postId: string) {
     const [post, setPost] = useState<PostDetailData | null>(null);
     const [allPosts, setAllPosts] = useState<PostDetailData[]>([]);
+    const [folders, setFolders] = useState<Folder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [answers, setAnswers] = useState<Answer[]>([]);
@@ -36,16 +38,27 @@ export function usePostDetail(postId: string) {
         }
     }, []);
 
+    const fetchFolders = useCallback(async () => {
+        try {
+            const res = await client.fetchFolders();
+            setFolders((res as any)?.data || res || []);
+        } catch (err) {
+            console.error("Failed to load folders", err);
+        }
+    }, []);
+
     useEffect(() => {
         if (postId) {
             fetchPost();
             fetchRecency();
+            fetchFolders();
         }
-    }, [postId, fetchPost, fetchRecency]);
+    }, [postId, fetchPost, fetchRecency, fetchFolders]);
 
     return {
         post,
         allPosts,
+        folders,
         loading,
         error,
         setError,

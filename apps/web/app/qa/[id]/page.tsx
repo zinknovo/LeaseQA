@@ -20,7 +20,7 @@ export default function PostDetailPage() {
     const currentUserId = session.user?.id || (session.user as any)?._id;
     const currentRole = session.user?.role;
 
-    const {post, allPosts, loading, error, setError, answers, discussions, resolvedStatus, setResolvedStatus, refetch} = usePostDetail(postId);
+    const {post, allPosts, folders, loading, error, setError, answers, discussions, resolvedStatus, setResolvedStatus, refetch} = usePostDetail(postId);
     const postEdit = usePostEdit(post);
     const answerState = useAnswers();
     const discussionState = useDiscussions();

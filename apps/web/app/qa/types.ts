@@ -18,7 +18,6 @@ export type Post = {
     summary: string;
     details: string;
     postType: "question" | "note" | "announcement";
-    visibility: "class" | "private";
     audience?: "everyone" | "admin";
     folders: string[];
     attachments?: Attachment[];

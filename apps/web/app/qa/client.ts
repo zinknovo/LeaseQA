@@ -49,7 +49,6 @@ export async function createPost(payload: {
     details: string;
     folders: string[];
     postType?: string;
-    visibility?: string;
     audience?: string;
     urgency?: string;
     isAnonymous?: boolean;

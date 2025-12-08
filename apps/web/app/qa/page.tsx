@@ -129,8 +129,7 @@ function QAPageInner() {
                 audience: composeState.audience,
                 urgency: composeState.urgency,
                 isAnonymous: composeState.isAnonymous,
-                visibility: "class",
-            });
+                            });
             const newPost = (resp as any)?.data || resp;
             if (newPost?._id && composeState.files.length) {
                 await client.uploadPostAttachments(newPost._id, composeState.files).catch(console.error);

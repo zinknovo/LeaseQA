@@ -20,3 +20,8 @@ export async function submitAiReview(form: FormData) {
     });
     return response.data;
 }
+
+export async function deleteReview(reviewId: string) {
+    const response = await axiosWithCredentials.delete(`${API_BASE}/ai-reviews/${reviewId}`);
+    return response.data;
+}

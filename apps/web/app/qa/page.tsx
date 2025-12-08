@@ -1,7 +1,6 @@
 "use client";
-export const dynamic = "force-dynamic";
 
-import {useEffect, useMemo, useState} from "react";
+import {Suspense, useEffect, useMemo, useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import {Col, Row} from "react-bootstrap";
 
@@ -18,7 +17,7 @@ import ComposeForm from "./components/ComposeForm";
 import PinPostsSection from "./components/PinPostsSection";
 import PostDetailSection from "./components/PostDetailSection";
 
-export default function QAPage() {
+function QAPageInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const scenario = searchParams.get("scenario") || "all";
@@ -207,5 +206,19 @@ export default function QAPage() {
                 </Col>
             </Row>
         </>
+    );
+}
+
+export default function QAPage() {
+    return (
+        <Suspense
+            fallback={
+                <div className="d-flex justify-content-center align-items-center loading-min-height">
+                    <div className="text-center text-secondary small">Loading Q&A…</div>
+                </div>
+            }
+        >
+            <QAPageInner/>
+        </Suspense>
     );
 }

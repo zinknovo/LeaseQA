@@ -13,9 +13,10 @@ type PostDetailSectionProps = {
     postId: string;
     folders: Folder[];
     onClose: () => void;
+    onPostUpdated?: () => void;
 };
 
-export default function PostDetailSection({postId, folders, onClose}: PostDetailSectionProps) {
+export default function PostDetailSection({postId, folders, onClose, onPostUpdated}: PostDetailSectionProps) {
     const session = useSelector((state: RootState) => state.session);
     const currentUserId = session.user?.id || (session.user as any)?._id;
     const currentRole = session.user?.role;
@@ -73,6 +74,7 @@ export default function PostDetailSection({postId, folders, onClose}: PostDetail
 
     const isAuthor = post && currentUserId && post.authorId?.toString() === currentUserId;
     const canEditPost = !isGuest && (isAuthor || currentRole === "admin");
+    const isAdmin = currentRole === "admin";
 
     const handleDeletePost = async () => {
         await client.deletePost(postId);
@@ -102,6 +104,17 @@ export default function PostDetailSection({postId, folders, onClose}: PostDetail
         setResolvedStatus(status);
         await client.updatePost(postId, {isResolved: status === "resolved"});
         await fetchPost();
+    };
+
+    const handleTogglePin = async () => {
+        if (!post) return;
+        try {
+            await client.togglePinPost(postId, !post.isPinned);
+            await fetchPost();
+            onPostUpdated?.();
+        } catch (err: any) {
+            console.error("Failed to toggle pin:", err);
+        }
     };
 
     const handleSubmitAnswer = async () => {
@@ -213,6 +226,7 @@ export default function PostDetailSection({postId, folders, onClose}: PostDetail
                 editUrgency={editUrgency}
                 editFolders={editFolders}
                 resolvedStatus={resolvedStatus}
+                isAdmin={isAdmin}
                 onStatusChange={handleStatusChange}
                 onEdit={() => setIsEditing(true)}
                 onDelete={handleDeletePost}
@@ -222,6 +236,7 @@ export default function PostDetailSection({postId, folders, onClose}: PostDetail
                 onDetailsChange={setEditDetails}
                 onUrgencyChange={setEditUrgency}
                 onFoldersChange={setEditFolders}
+                onTogglePin={handleTogglePin}
             />
 
             <AnswersSection

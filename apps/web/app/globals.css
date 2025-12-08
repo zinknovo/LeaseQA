@@ -1812,6 +1812,40 @@ body {
     color: #065f46;
 }
 
+/* Pin Button & Badge */
+.post-action-btn.pin {
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--qa-border);
+    border-radius: 6px;
+    padding: 0.4rem 0.5rem;
+    transition: all 0.15s ease;
+}
+
+.post-action-btn.pin:hover {
+    background: rgba(108, 92, 231, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.post-action-btn.pin.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.post-pinned-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(234, 179, 8, 0.15);
+    color: #b45309;
+}
+
 /* Post Detail Footer */
 .post-detail-footer {
     margin-top: 1.5rem;

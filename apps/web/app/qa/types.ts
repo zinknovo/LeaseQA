@@ -124,6 +124,7 @@ export type PostContentProps = {
     editUrgency: "low" | "medium" | "high";
     editFolders: string[];
     resolvedStatus: "open" | "resolved";
+    isAdmin: boolean;
     onStatusChange: (status: "open" | "resolved") => void;
     onEdit: () => void;
     onDelete: () => void;
@@ -133,6 +134,7 @@ export type PostContentProps = {
     onDetailsChange: (val: string) => void;
     onUrgencyChange: (val: "low" | "medium" | "high") => void;
     onFoldersChange: (val: string[]) => void;
+    onTogglePin: () => void;
 };
 
 export type AnswersSectionProps = {

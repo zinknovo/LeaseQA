@@ -223,6 +223,7 @@ function QAPageInner() {
                             postId={postIdParam}
                             folders={folders}
                             onClose={handleClosePost}
+                            onPostUpdated={loadData}
                         />
                     )}
                 </Col>

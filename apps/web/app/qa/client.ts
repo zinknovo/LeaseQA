@@ -106,6 +106,11 @@ export async function deleteDiscussion(discussionId: string) {
     return response.data;
 }
 
+export async function togglePinPost(postId: string, isPinned: boolean) {
+    const response = await axiosWithCredentials.patch(`${API_BASE}/posts/${postId}/pin`, {isPinned});
+    return response.data;
+}
+
 export async function fetchStats() {
     const response = await axiosWithCredentials.get(`${API_BASE}/stats/overview`);
     return response.data;

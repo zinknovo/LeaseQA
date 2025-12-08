@@ -1,4 +1,4 @@
-import {FaEdit, FaTrash, FaEye} from "react-icons/fa";
+import {FaEdit, FaTrash, FaEye, FaMapPin} from "react-icons/fa";
 import {format} from "date-fns";
 import {PostContentProps} from "../../types";
 import EditPostForm from "./EditPostForm";
@@ -13,6 +13,7 @@ export default function PostContent({
     editUrgency,
     editFolders,
     resolvedStatus,
+    isAdmin,
     onStatusChange,
     onEdit,
     onDelete,
@@ -22,6 +23,7 @@ export default function PostContent({
     onDetailsChange,
     onUrgencyChange,
     onFoldersChange,
+    onTogglePin,
 }: PostContentProps) {
     const isAnonymous = (post as any).isAnonymous;
     const authorName = isAnonymous ? "Anonymous" : (post.author?.username || post.author?.email || "Unknown");
@@ -51,9 +53,24 @@ export default function PostContent({
                     </div>
                 </div>
                 <div className="post-detail-header-right">
+                    {post.isPinned && (
+                        <span className="post-pinned-badge">
+                            <FaMapPin size={12}/>
+                            Pinned
+                        </span>
+                    )}
                     <span className={`post-urgency-badge ${post.urgency || "low"}`}>
                         {(post.urgency || "low").toUpperCase()}
                     </span>
+                    {isAdmin && !isEditing && (
+                        <button
+                            className={`post-action-btn pin ${post.isPinned ? "active" : ""}`}
+                            onClick={onTogglePin}
+                            title={post.isPinned ? "Unpin post" : "Pin post"}
+                        >
+                            <FaMapPin size={14}/>
+                        </button>
+                    )}
                     {canEdit && !isEditing && (
                         <div className="post-detail-actions">
                             <button className="post-action-btn" onClick={onEdit}>
